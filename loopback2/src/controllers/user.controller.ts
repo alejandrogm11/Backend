@@ -21,6 +21,9 @@ import {genSalt, hash} from 'bcryptjs';
 import _ from 'lodash';
 import {UserCredentialsRepository} from '@loopback/authentication-jwt';
 import { threadId } from 'worker_threads';
+import { UserRepository } from '../repositories/user.repository';
+
+
 
 
 @model()
@@ -65,6 +68,8 @@ export class UserController {
     public user: UserProfile,
     @repository(UserRepository) protected userRepository: UserRepository,
     @repository(UserCredentialsRepository) protected userCredentialsRepository: UserCredentialsRepository,
+        constructor(@inject(UserRepository) userRepository: UserRepository) {
+        this.userRepository = userRepository;
     
   ) {}
 
