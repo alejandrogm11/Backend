@@ -106,7 +106,8 @@ export class UserController {
       throw error;
     }
   }
-
+  
+  
   @authenticate('jwt')
   @get('/whoAmI', {
     responses: {
@@ -123,10 +124,16 @@ export class UserController {
     },
   })
   async whoAmI(
+    
     @inject(SecurityBindings.USER)
     currentUserProfile: UserProfile,
-  ): Promise<string> {
-    return currentUserProfile[securityId];
+    
+  ): Promise<object> {
+    return {
+    id: currentUserProfile[securityId],
+    email: currentUserProfile.email || "Sin mail", // Para debug
+    }
+    
   }
 
   @post('/signup', {
