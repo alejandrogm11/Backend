@@ -6,7 +6,6 @@ import {juggler} from '@loopback/repository';
 //   connector: 'json',
 //   file: 'data/agmDB.json',
 // };
-import path from 'path';
 
 const config = {
   name: 'agmDB',

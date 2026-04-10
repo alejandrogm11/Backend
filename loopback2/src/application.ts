@@ -10,6 +10,14 @@ import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
 import {MySequence} from './sequence';
 
+// Imports de autenticacion JWT
+import {AuthenticationComponent} from '@loopback/authentication';
+import {
+  JWTAuthenticationComponent,
+  UserServiceBindings,
+} from '@loopback/authentication-jwt';
+import {AgmmssqlDataSource} from './datasources/agm-mssql.datasource';
+
 export {ApplicationConfig};
 
 export class Loopback2Application extends BootMixin(
@@ -30,13 +38,20 @@ export class Loopback2Application extends BootMixin(
     });
     this.component(RestExplorerComponent);
 
+    // Componentes de la autenticacion
+    this.component(AuthenticationComponent);
+    this.component(JWTAuthenticationComponent);
+    this.dataSource(AgmmssqlDataSource, UserServiceBindings.DATASOURCE_NAME);
+
+
+
     this.projectRoot = __dirname;
     // Customize @loopback/boot Booter Conventions here
     this.bootOptions = {
       controllers: {
         // Customize ControllerBooter Conventions here
         dirs: ['controllers'],
-        extensions: ['.controller.js'],
+        extensions: ['.controller.ts'],
         nested: true,
       },
     };

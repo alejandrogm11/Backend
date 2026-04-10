@@ -11,8 +11,8 @@ const config = {
   password: 'MiContraseñaSegura123!',
   database: 'AGMPRUEBAS',
   options: {
-    enableArithAbort: false
-  },
+    enableArithAbort: true
+  }
 };
 
 // Observe application's life cycle to disconnect the datasource when
