@@ -14,12 +14,16 @@ import {
   getModelSchemaRef,
   post,
   requestBody,
+  response,
   SchemaObject,
+  RestBindings,
+  Response
 } from '@loopback/rest';
 import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
 import {genSalt, hash} from 'bcryptjs';
 import _ from 'lodash';
 import {UserCredentialsRepository} from '@loopback/authentication-jwt';
+import { Message } from 'primevue';
 
 
 
@@ -64,13 +68,16 @@ export class UserController {
     public userService: MyUserService,
     @inject(SecurityBindings.USER, {optional: true})
     public user: UserProfile,
-    @repository(UserRepository) protected userRepository: UserRepository,
-    @repository(UserCredentialsRepository) protected userCredentialsRepository: UserCredentialsRepository,
-    
+    @repository(UserRepository) 
+    protected userRepository: UserRepository,
+    @repository(UserCredentialsRepository) 
+    protected userCredentialsRepository: UserCredentialsRepository,
+    @inject(RestBindings.Http.RESPONSE)
+    private response: Response,
     
   ) {}
 
-  @post('/users/login', {
+  @post('/auth/login', {
     responses: {
       '200': {
         description: 'Token',
@@ -91,8 +98,12 @@ export class UserController {
   })
   async login(
     @requestBody(CredentialsRequestBody) credentials: Credentials,
-  ): Promise<{token: string}> {
+  ): Promise<object> {
     try{
+
+
+    //verifica credenciales y genera el token
+
     // ensure the user exists, and the password is correct
     const user = await this.userService.verifyCredentials(credentials);
     // convert a User object into a UserProfile object (reduced set of properties)
@@ -100,7 +111,25 @@ export class UserController {
 
     // create a JSON Web Token based on the user profile
     const token = await this.jwtService.generateToken(userProfile);
-    return {token};
+
+    //en lugar de devolver el token, lo metemos en una cookie httpOnly
+    this.response.cookie('access_Token', token, {
+      httpOnly: true, // JS del navegador nunca puede leerla
+      secure: process.env.NODE_ENV === 'production', // solo HTTPS en producción
+      sameSite: 'strict',
+      maxAge : 60*60*1000, // 1 hora en milisegundos
+      path: '/',
+    });
+
+    return {
+      Message: 'Succesful Login',
+      user: {
+        id: userProfile[securityId],
+      },
+    };
+
+
+    // Debug
     } catch(error){
       console.error('Login error:', error)
       throw error;

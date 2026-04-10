@@ -9,7 +9,7 @@ import {RestApplication} from '@loopback/rest';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
 import {MySequence} from './sequence';
-import {cookieParser} from 'cookie-parser'
+import cookieParser from 'cookie-parser'
 
 
 // Imports de autenticacion JWT
@@ -31,6 +31,9 @@ export class Loopback2Application extends BootMixin(
 
     // Set up the custom sequence
     this.sequence(MySequence);
+
+    // Addinng Express Middleware
+    this.expressMiddleware(cookieParser as any, {});
 
     // Set up default home page
     this.static('/', path.join(__dirname, '../public'));
