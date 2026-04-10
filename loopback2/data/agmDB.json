@@ -1,0 +1,10 @@
+{
+  "ids": {
+    "AgmOrders": 2
+  },
+  "models": {
+    "AgmOrders": {
+      "1": "{\"orderId\":1,\"amount\":120}"
+    }
+  }
+}
