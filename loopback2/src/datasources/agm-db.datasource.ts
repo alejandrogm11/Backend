@@ -7,6 +7,8 @@ import {juggler} from '@loopback/repository';
 //   file: 'data/agmDB.json',
 // };
 
+
+
 const config = {
   name: 'agmDB',
   connector: 'memory',
@@ -14,6 +16,8 @@ const config = {
   file: './data/agmDB.json',
   
 };
+
+
 
 @lifeCycleObserver('datasource')
 export class AgmDbDataSource extends juggler.DataSource
