@@ -39,16 +39,18 @@ export class Loopback2Application extends BootMixin(
     });
     this.component(RestExplorerComponent);
 
-    // ===== COMPONENTES DE AUTENTICACION JWT =====
-    this.component(AuthenticationComponent);
-    this.component(JWTAuthenticationComponent);
-    
-    // ===== DATASOURCE CONFIGURATION =====
-    this.dataSource(AgmmssqlDataSource, UserServiceBindings.DATASOURCE_NAME);
-    
-    // ===== BINDING DE REPOSITORIOS PARA JWT =====
-    this.bind(UserServiceBindings.USER_REPOSITORY).toClass(UserRepository);
-    this.bind(UserServiceBindings.USER_CREDENTIALS_REPOSITORY).toClass(UserCredentialsRepository);
+// ===== COMPONENTES DE AUTENTICACION JWT =====
+this.component(AuthenticationComponent);
+this.component(JWTAuthenticationComponent);
+
+// ===== DATASOURCE CONFIGURATION =====
+// El JWT component busca un datasource con clave 'datasources.db'
+// Registramos agmmssql como el datasource predeterminado
+this.bind('datasources.db').to(AgmmssqlDataSource);
+
+// ===== BINDING DE REPOSITORIOS PARA JWT =====
+this.bind(UserServiceBindings.USER_REPOSITORY).toClass(UserRepository);
+this.bind(UserServiceBindings.USER_CREDENTIALS_REPOSITORY).toClass(UserCredentialsRepository);
 
     this.projectRoot = __dirname;
     // Customize @loopback/boot Booter Conventions here

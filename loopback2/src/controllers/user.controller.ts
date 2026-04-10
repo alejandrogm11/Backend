@@ -68,8 +68,7 @@ export class UserController {
     public user: UserProfile,
     @repository(UserRepository) protected userRepository: UserRepository,
     @repository(UserCredentialsRepository) protected userCredentialsRepository: UserCredentialsRepository,
-        constructor(@inject(UserRepository) userRepository: UserRepository) {
-        this.userRepository = userRepository;
+    
     
   ) {}
 
