@@ -9,6 +9,8 @@ import {RestApplication} from '@loopback/rest';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
 import {MySequence} from './sequence';
+import {cookieParser} from 'cookie-parser'
+
 
 // Imports de autenticacion JWT
 import {AuthenticationComponent} from '@loopback/authentication';
