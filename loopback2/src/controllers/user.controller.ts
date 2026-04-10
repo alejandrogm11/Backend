@@ -129,6 +129,9 @@ export class UserController {
     currentUserProfile: UserProfile,
     
   ): Promise<object> {
+    console.log("Full User profile: ", JSON.stringify(currentUserProfile)) // debug
+    console.log("Security id value: ", securityId) // debug
+
     return {
     id: currentUserProfile[securityId],
     email: currentUserProfile.email || "Sin mail", // Para debug
