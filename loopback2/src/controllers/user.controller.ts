@@ -23,7 +23,6 @@ import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
 import {genSalt, hash} from 'bcryptjs';
 import _ from 'lodash';
 import {UserCredentialsRepository} from '@loopback/authentication-jwt';
-import { Message } from 'primevue';
 
 
 
@@ -137,7 +136,7 @@ export class UserController {
   }
   
   
-  @authenticate('jwt')
+  @authenticate('jwt-cookie')
   @get('/whoAmI', {
     responses: {
       '200': {

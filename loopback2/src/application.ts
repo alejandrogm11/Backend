@@ -13,13 +13,14 @@ import cookieParser from 'cookie-parser'
 
 
 // Imports de autenticacion JWT
-import {AuthenticationComponent} from '@loopback/authentication';
+import {AuthenticationComponent, registerAuthenticationStrategy} from '@loopback/authentication';
 import {
   JWTAuthenticationComponent,
   UserServiceBindings,
 } from '@loopback/authentication-jwt';
 import {AgmmssqlDataSource} from './datasources/agm-mssql.datasource';
 import {UserRepository, UserCredentialsRepository} from './repositories';
+import {JwtCookieStrategy} from './services/jwt-cookie.strategy';
 
 export {ApplicationConfig};
 
@@ -47,6 +48,7 @@ export class Loopback2Application extends BootMixin(
 // ===== COMPONENTES DE AUTENTICACION JWT =====
 this.component(AuthenticationComponent);
 this.component(JWTAuthenticationComponent);
+registerAuthenticationStrategy(this, JwtCookieStrategy);
 
 // ===== DATASOURCE CONFIGURATION =====
 // El JWT component busca un datasource con clave 'datasources.db'
