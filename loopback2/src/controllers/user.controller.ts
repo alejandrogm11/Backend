@@ -20,8 +20,6 @@ import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
 import {genSalt, hash} from 'bcryptjs';
 import _ from 'lodash';
 import {UserCredentialsRepository} from '@loopback/authentication-jwt';
-import { threadId } from 'worker_threads';
-import { UserRepository } from '../repositories/user.repository';
 
 
 
