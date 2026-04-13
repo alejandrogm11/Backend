@@ -23,6 +23,9 @@ import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
 import {genSalt, hash} from 'bcryptjs';
 import _ from 'lodash';
 import {UserCredentialsRepository} from '@loopback/authentication-jwt';
+import { access } from 'fs';
+import { strict } from 'assert';
+import { Message } from 'primevue';
 
 
 
@@ -215,4 +218,38 @@ export class UserController {
 
     return savedUser;
   }
+
+  @post('/auth/logout', {
+  responses: {
+    '200': {
+      description: 'Logout exitoso',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              message: {type: 'string'},
+            },
+          },
+        },
+      },
+    },
+  },
+})
+async logout() : Promise<object> {
+    this.response.clearCookie('access_Token', {
+      httpOnly: true,
+      secure: process.env.NOD_ENV === 'production',
+      sameSite: 'strict',
+      path: '/',
+    })
+  return {message: 'Logout Succesful'}
+}
+
+
+
+
+
+
+
 }

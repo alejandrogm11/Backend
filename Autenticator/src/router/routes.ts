@@ -13,6 +13,13 @@ const routes: RouteRecordRaw[] = [
     path: '/:catchAll(.*)*',
     component: () => import('pages/ErrorNotFound.vue'),
   },
+
+
+  // Layout de inicio de sesión
+  {
+    path: '/auth/login',
+    component: () => import('layouts/LoginLayout.vue')
+  }
 ];
 
 export default routes;
