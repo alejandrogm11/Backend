@@ -106,6 +106,7 @@ async function debug(){
   }
   catch(error){
     console.error("Error en el login: ", error )
+
   }
   finally{
     $q.loading.hide()
