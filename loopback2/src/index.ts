@@ -31,6 +31,12 @@ if (require.main === module) {
         setServersFromRequest: true,
       },
     },
+    cors: {
+            origin: 'http://localhost:9000',
+      credentials: true,
+      allowedHeaders: ['Content-Type'],
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    }
   };
   main(config).catch(err => {
     console.error('Cannot start the application.', err);

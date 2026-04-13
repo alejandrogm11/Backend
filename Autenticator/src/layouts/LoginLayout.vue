@@ -42,6 +42,8 @@
 
         <br>
         <q-btn push color="info" icon="login" label="Login" @click="debug"/>
+
+
       </q-card-section>
 
       <q-separator spaced inset vertical dark />
@@ -52,7 +54,7 @@
 <script setup lang="ts">
 import {ref} from 'vue'
 import { useQuasar } from 'quasar'
-import axios from "axios"
+import { ofetch } from "ofetch";
 
 const $q = useQuasar()
 
@@ -63,12 +65,15 @@ const email = ref()
 const passwd = ref()
 const rememberMe = ref(false)
 
+
+// FUncion para mostrar spinner
+// function delay(ms: number = 2000): Promise<void> {
+//   return new Promise((resolve) => setTimeout(resolve, ms));
+// }
+
 // DEBUG
 async function debug(){
-  console.log(email, passwd, rememberMe)
-  email.value = ''
-  passwd.value = ''
-  rememberMe.value = false
+  console.log(email.value, passwd.value, rememberMe.value)
 
   if (!$q) {
     console.error('Quasar no está disponible')
@@ -76,35 +81,40 @@ async function debug(){
   }
 
   $q.loading.show({
-    delay: 100,
-    message: "Intentando inicaar sesion",
+    delay: 200,
+    message: "Intentando iniciar sesion",
     spinnerColor: "secondary"
   })
-  try{
+
     // Aquí usarás await con tu petición a la API
-    const response = await axios.post('/api/login', {
-      email: email.value,
-      passwd: passwd.value
-    })
-    console.log("Sesion iniciada:", response.data)
+
+  try{
+    const resp = await ofetch('/api/auth/login', {
+  method: 'POST',
+  body: {
+    email: email.value,
+    password: passwd.value,
+    rememberMe: rememberMe.value
+  },
+  credentials: 'include',
+  headers: {
+    'Content-Type': 'application/json'
+  }});
+
+  console.log('Respuesta:', resp)
+
   }
   catch(error){
-    console.error(error)
+    console.error("Error en el login: ", error )
   }
   finally{
     $q.loading.hide()
+    email.value = ''
+    passwd.value = ''
+    rememberMe.value = false
   }
 }
 
-
-
-
-
-
-
-
-
-// ToDo: Hacer peticion a API y gestionar devolución etc...
 
 // Fin del Script
 </script>
@@ -125,7 +135,7 @@ async function debug(){
   width: 570px;
 }
 .my-card {
-  background: rgba(206, 205, 205, 0.4);
+  background: rgba(206, 205, 205, 0.5);
   backdrop-filter: blur(12px);
   border-radius: 16px;
   padding: 24px;

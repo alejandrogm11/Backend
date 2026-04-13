@@ -28,7 +28,18 @@ export class Loopback2Application extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
 ) {
   constructor(options: ApplicationConfig = {}) {
-    super(options);
+      super({                              // ← cambia esta línea
+    ...options,
+    rest: {
+      ...options.rest,
+      cors: {
+        origin: 'http://localhost:9000',
+        credentials: true,
+        allowedHeaders: ['Content-Type'],
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+      },
+    },
+  }); 
 
     // Set up the custom sequence
     this.sequence(MySequence);
