@@ -51,6 +51,7 @@ const CredentialsSchema: SchemaObject = {
       type: 'string',
       minLength: 8,
     },
+    rememberMe: {type: 'boolean'}
   },
 };
 
@@ -99,7 +100,7 @@ export class UserController {
     },
   })
   async login(
-    @requestBody(CredentialsRequestBody) credentials: Credentials,
+    @requestBody(CredentialsRequestBody) credentials: Credentials & {rememberMe?: boolean},
   ): Promise<object> {
     try{
 
@@ -114,12 +115,16 @@ export class UserController {
     // create a JSON Web Token based on the user profile
     const token = await this.jwtService.generateToken(userProfile);
 
+    const maxAge = credentials.rememberMe
+    ? 30 * 24 * 60 * 60 * 1000  // 30 días en ms
+    : 60 * 60 * 1000;            // 1 hora en ms
+
     //en lugar de devolver el token, lo metemos en una cookie httpOnly
     this.response.cookie('access_Token', token, {
       httpOnly: true, // JS del navegador nunca puede leerla
       secure: process.env.NODE_ENV === 'production', // solo HTTPS en producción
       sameSite: 'strict',
-      maxAge : 60*60*1000, // 1 hora en milisegundos
+      maxAge : maxAge,
       path: '/',
     });
 
