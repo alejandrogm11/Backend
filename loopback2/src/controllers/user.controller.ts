@@ -137,7 +137,7 @@ export class UserController {
   
   
   @authenticate('jwt-cookie')
-  @get('/whoAmI', {
+  @get('/auth/me', {
     responses: {
       '200': {
         description: 'Return current user',
@@ -155,14 +155,20 @@ export class UserController {
     
     @inject(SecurityBindings.USER)
     currentUserProfile: UserProfile,
+
+
     
   ): Promise<object> {
-    console.log("Full User profile: ", JSON.stringify(currentUserProfile)) // debug
-    console.log("Security id value: ", securityId) // debug
+
+    const userId = currentUserProfile[securityId];
+
+
+    // Se hace consulta a BBDD para encontrar el 
+    const user = await this.userRepository.findById(userId)
 
     return {
-    id: currentUserProfile[securityId],
-    email: currentUserProfile.email || "Sin mail", // Para debug
+    id: user.id,
+    email: user.email
     }
     
   }

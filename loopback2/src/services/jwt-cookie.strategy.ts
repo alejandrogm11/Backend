@@ -7,14 +7,19 @@ import {UserProfile} from '@loopback/security';
 export class JwtCookieStrategy implements AuthenticationStrategy {
   name = 'jwt-cookie';
 
+
   constructor(
     @inject(TokenServiceBindings.TOKEN_SERVICE)
     public tokenService: TokenService,
   ) {}
 
   async authenticate(request: Request): Promise<UserProfile | undefined> {
+
+
     // en lugar de mirar request.headers.authorization, miramos la cookie
     const token: string = request.cookies?.access_Token;
+
+
 
     if (!token) {
       throw new HttpErrors.Unauthorized('No active session');
