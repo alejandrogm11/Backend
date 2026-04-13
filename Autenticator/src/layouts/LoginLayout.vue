@@ -25,9 +25,10 @@
 
 }
 .contenedor{
-  position: relative;
-  top: 50%;
-  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
 }
 
 </style>
