@@ -12,14 +12,14 @@
 // to match your app's branding.
 // Tip: Use the "Theme Builder" on Quasar's documentation website.
 
-$primary: #1976d2;
-$secondary: #26a69a;
-$accent: #9c27b0;
+$primary: #406f83;           // Azul-gris del gradiente (coherencia visual)
+$secondary: #234855;         // Azul más oscuro del gradiente
+$accent: #1a9b8e;            // Verde teálá (complementario con los azules)
 
-$dark: #1d1d1d;
-$dark-page: #121212;
+$dark: #132c36;              // Azul muy oscuro del gradiente
+$dark-page: #0a1a20;         // Negro azulado (más oscuro)
 
-$positive: #21ba45;
-$negative: #c10015;
-$info: #31ccec;
-$warning: #f2c037;
+$positive: #2dd4bf;          // Verde más brillante (destacado)
+$negative: #ff6b6b;          // Rojo coral (más visible sobre fondo oscuro)
+$info: #38bdf8;              // Cyan brillante (contrasta mejor)
+$warning: #fbbf24;           // Ámbar (más visible)
