@@ -41,7 +41,7 @@
         <q-checkbox text="dark" color="positive" left-label v-model="rememberMe" label="Mantener sesión" class="remember"/>
 
         <br>
-        <q-btn push color="info" icon="login" label="Login" @click="debug; handleClick"/>
+        <q-btn push color="info" icon="login" label="Login" @click="debug"/>
       </q-card-section>
 
       <q-separator spaced inset vertical dark />
@@ -51,8 +51,10 @@
 
 <script setup lang="ts">
 import {ref} from 'vue'
+import { useQuasar } from 'quasar'
+import axios from "axios"
 
-
+const $q = useQuasar()
 
 //Visibilidad de contraseña
 const isPwd = ref(false)
@@ -62,12 +64,42 @@ const passwd = ref()
 const rememberMe = ref(false)
 
 // DEBUG
-function debug(){
+async function debug(){
   console.log(email, passwd, rememberMe)
   email.value = ''
   passwd.value = ''
   rememberMe.value = false
+
+  if (!$q) {
+    console.error('Quasar no está disponible')
+    return
+  }
+
+  $q.loading.show({
+    delay: 100,
+    message: "Intentando inicaar sesion",
+    spinnerColor: "secondary"
+  })
+  try{
+    // Aquí usarás await con tu petición a la API
+    const response = await axios.post('/api/login', {
+      email: email.value,
+      passwd: passwd.value
+    })
+    console.log("Sesion iniciada:", response.data)
+  }
+  catch(error){
+    console.error(error)
+  }
+  finally{
+    $q.loading.hide()
+  }
 }
+
+
+
+
+
 
 
 
