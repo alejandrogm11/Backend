@@ -1,12 +1,17 @@
 <template>
-  <q-page class="row items-center justify-evenly">
-    <example-component
+  <q-page class="row col-12 items-center justify-evenly">
+    <example-component class="col-8 bg-red"
       title="Example component"
       active
       :todos="todos"
       :meta="meta"
     ></example-component>
+
+    <q-btn color="primary" icon="check" label="Login" to="/auth/login" />
+
   </q-page>
+
+
 </template>
 
 <script setup lang="ts">
