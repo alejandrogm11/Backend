@@ -54,7 +54,6 @@
 <script setup lang="ts">
 import {ref} from 'vue'
 import { useQuasar } from 'quasar'
-import { ofetch } from "ofetch";
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from 'src/stores/auth'
 
@@ -149,9 +148,9 @@ async function handleLogin(){
 .contenedor {
   background: linear-gradient(
     120deg,
-    #132c36,
+    #205164,
     #234855,
-    #406f83
+    #6ab2d1
   );
   background-size: 200% 200%;
   animation: gradientMove 10s ease-in-out infinite;
