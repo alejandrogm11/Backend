@@ -48,15 +48,18 @@
           </q-input>
 
           <br />
-
+          <div class="remeber-signup-container">
           <q-checkbox
             text="dark"
             color="positive"
             left-label
             v-model="rememberMe"
-            label="Mantener sesión"
+            label="Mantener sesión Iniciada"
             class="remember"
           />
+
+          <router-link to="/signup" class="signup-link">¿No tienes cuenta? Regístrate</router-link>
+          </div>
 
           <br />
           <q-btn class="btn" push color="info" icon="login" label="Login" @click="validateForm" />
@@ -148,11 +151,34 @@ async function handleLogin() {
 }
 
 .remember {
-  margin-top: 10px;
+  margin-right: 20px;
   display: flex;
-  justify-content: flex-start;
-  color: rgba(255, 255, 255, 0.8);
+  justify-content: flex-start; /*  izquierda */
 }
+
+.remember-signup-container {
+  display: flex;
+  justify-content: space-between; /* espacio entre checkbox y link */
+  align-items: center; /* alinear verticalmente */
+  margin-top: 10px;
+}
+
+
+.signup-link {
+  color: $info;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+  cursor: pointer;
+  white-space: nowrap;
+  margin-left: 20px;
+}
+
+.signup-link:hover {
+  color: #8bd5ff;
+  text-decoration: underline;
+}
+
 
 /* CARD */
 .my-card {
