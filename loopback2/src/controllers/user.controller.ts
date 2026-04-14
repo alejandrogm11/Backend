@@ -68,13 +68,12 @@ export class UserController {
     public userService: MyUserService,
     @inject(SecurityBindings.USER, {optional: true})
     public user: UserProfile,
-    @repository(UserRepository) 
+    @repository(UserRepository)
     protected userRepository: UserRepository,
-    @repository(UserCredentialsRepository) 
+    @repository(UserCredentialsRepository)
     protected userCredentialsRepository: UserCredentialsRepository,
     @inject(RestBindings.Http.RESPONSE)
     private response: Response,
-    
   ) {}
 
   @post('/auth/login', {
@@ -97,50 +96,47 @@ export class UserController {
     },
   })
   async login(
-    @requestBody(CredentialsRequestBody) credentials: Credentials & {rememberMe?: boolean},
+    @requestBody(CredentialsRequestBody)
+    credentials: Credentials & {rememberMe?: boolean},
   ): Promise<object> {
-    try{
+    try {
+      //verifica credenciales y genera el token
 
+      // ensure the user exists, and the password is correct
+      const user = await this.userService.verifyCredentials(credentials);
+      // convert a User object into a UserProfile object (reduced set of properties)
+      const userProfile = this.userService.convertToUserProfile(user);
 
-    //verifica credenciales y genera el token
+      // create a JSON Web Token based on the user profile
+      const token = await this.jwtService.generateToken(userProfile);
 
-    // ensure the user exists, and the password is correct
-    const user = await this.userService.verifyCredentials(credentials);
-    // convert a User object into a UserProfile object (reduced set of properties)
-    const userProfile = this.userService.convertToUserProfile(user);
+      const maxAge = credentials.rememberMe
+        ? 30 * 24 * 60 * 60 * 1000 // 30 días en ms
+        : 60 * 60 * 1000; // 1 hora en ms
 
-    // create a JSON Web Token based on the user profile
-    const token = await this.jwtService.generateToken(userProfile);
+      //en lugar de devolver el token, lo metemos en una cookie httpOnly
+      this.response.cookie('access_Token', token, {
+        httpOnly: true, // JS del navegador nunca puede leerla
+        secure: process.env.NODE_ENV === 'production', // solo HTTPS en producción
+        sameSite: 'strict',
+        maxAge: maxAge,
+        path: '/',
+      });
 
-    const maxAge = credentials.rememberMe
-    ? 30 * 24 * 60 * 60 * 1000  // 30 días en ms
-    : 60 * 60 * 1000;            // 1 hora en ms
+      return {
+        Message: 'Succesful Login',
+        user: {
+          id: userProfile[securityId],
+        },
+      };
 
-    //en lugar de devolver el token, lo metemos en una cookie httpOnly
-    this.response.cookie('access_Token', token, {
-      httpOnly: true, // JS del navegador nunca puede leerla
-      secure: process.env.NODE_ENV === 'production', // solo HTTPS en producción
-      sameSite: 'strict',
-      maxAge : maxAge,
-      path: '/',
-    });
-
-    return {
-      Message: 'Succesful Login',
-      user: {
-        id: userProfile[securityId],
-      },
-    };
-
-
-    // Debug
-    } catch(error){
-      console.error('Login error:', error)
+      // Debug
+    } catch (error) {
+      console.error('Login error:', error);
       throw error;
     }
   }
-  
-  
+
   @authenticate('jwt-cookie')
   @get('/auth/me', {
     responses: {
@@ -157,25 +153,18 @@ export class UserController {
     },
   })
   async whoAmI(
-    
     @inject(SecurityBindings.USER)
     currentUserProfile: UserProfile,
-
-
-    
   ): Promise<object> {
-
     const userId = currentUserProfile[securityId];
 
-
-    // Se hace consulta a BBDD para encontrar el 
-    const user = await this.userRepository.findById(userId)
+    // Se hace consulta a BBDD para encontrar el
+    const user = await this.userRepository.findById(userId);
 
     return {
-    id: user.id,
-    email: user.email
-    }
-    
+      id: user.id,
+      email: user.email,
+    };
   }
 
   @post('/signup', {
@@ -208,13 +197,12 @@ export class UserController {
     const savedUser = await this.userRepository.create(
       _.omit(newUserRequest, ['password', 'id']),
     );
-  
-    // Introduce el 
-  await this.userCredentialsRepository.create({
-  password,
-  userId: savedUser.id,
-  });
 
+    // Introduce el
+    await this.userCredentialsRepository.create({
+      password,
+      userId: savedUser.id,
+    });
 
     // await this.userRepository.userCredentials(savedUser.id).create({password});
 
@@ -222,36 +210,29 @@ export class UserController {
   }
 
   @post('/auth/logout', {
-  responses: {
-    '200': {
-      description: 'Logout exitoso',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            properties: {
-              message: {type: 'string'},
+    responses: {
+      '200': {
+        description: 'Logout exitoso',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                message: {type: 'string'},
+              },
             },
           },
         },
       },
     },
-  },
-})
-async logout() : Promise<object> {
+  })
+  async logout(): Promise<object> {
     this.response.clearCookie('access_Token', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-    })
-  return {message: 'Logout Succesful'}
-}
-
-
-
-
-
-
-
+    });
+    return {message: 'Logout Succesful'};
+  }
 }
