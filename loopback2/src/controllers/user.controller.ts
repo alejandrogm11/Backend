@@ -17,12 +17,15 @@ import {
   response,
   SchemaObject,
   RestBindings,
-  Response
+  Response,
+  param
 } from '@loopback/rest';
 import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
 import {genSalt, hash} from 'bcryptjs';
 import _ from 'lodash';
 import {UserCredentialsRepository} from '@loopback/authentication-jwt';
+import { userInfo } from 'os';
+
 
 
 
@@ -235,4 +238,37 @@ export class UserController {
     });
     return {message: 'Logout Succesful'};
   }
+
+
+
+  @get('/auth/checkAvailableUser/{username}', {
+  responses: {
+    '200': {
+      description: 'User availability check',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              exists: { type: 'boolean' },
+            },
+          },
+        },
+      },
+    },
+  },
+})
+async checkAvailableUser(
+  @param.path.string('username') username: string,
+): Promise<{ exists: boolean }> {
+  const user = await this.userRepository.findOne({
+    where: { username: username },
+  });
+  return { exists: !!user };
 }
+
+
+
+// Fin user controller
+}
+

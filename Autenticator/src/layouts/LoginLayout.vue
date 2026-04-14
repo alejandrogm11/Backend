@@ -121,7 +121,7 @@ async function handleLogin() {
   }
 
   $q.loading.show({
-    delay: 200,
+    delay: 100,
     message: 'Intentando iniciar sesion',
     spinnerColor: 'secondary',
   });
