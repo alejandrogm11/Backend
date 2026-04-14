@@ -8,12 +8,18 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
   },
 
-
-
   // Layout de inicio de sesión
   {
     path: '/auth/login',
-    component: () => import('layouts/LoginLayout.vue')
+    component: () => import('layouts/LoginLayout.vue'),
+    meta: {requiresAuth: false},
+  },
+
+  // Layout de registro de cuenta
+  {
+    path: '/signup',
+    component: () => import('layouts/SignUpLayout.vue'),
+    meta: {requiresAuth: false},
   },
 
 

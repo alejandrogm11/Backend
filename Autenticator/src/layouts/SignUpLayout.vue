@@ -4,7 +4,7 @@
     <q-form class="my-card" bordered @submit.prevent="validateForm">
 
       <q-card-section class="items-center text-center">
-        <div class="text-h6">Login para todos</div>
+        <div class="text-h6">Signup - AGM</div>
       </q-card-section>
 
       <q-separator dark inset />
@@ -13,6 +13,21 @@
         <div @keyup.enter="validateForm">
           <div class="text-h7">Bienvenido</div>
           <br />
+
+          <q-input
+            standout
+            v-model="username"
+            type="text"
+            label="Username"
+            item-aligned
+            class="username"
+          >
+          <template v-slot:prepend>
+              <q-icon name="person" />
+            </template>
+          </q-input>
+
+
           <q-input
             standout
             v-model="email"
@@ -48,18 +63,12 @@
           </q-input>
 
           <br />
-
-          <q-checkbox
-            text="dark"
-            color="positive"
-            left-label
-            v-model="rememberMe"
-            label="Mantener sesión"
-            class="remember"
-          />
+          <div class="remember-signup-container">
+          <router-link to="/auth/login" class="login-link">¿Ya tienes cuenta? Inicia sesión</router-link>
+          </div>
 
           <br />
-          <q-btn class="btn" push color="info" icon="login" label="Login" @click="validateForm" />
+          <q-btn class="btn" push color="info" icon="login" label="Sign Up" @click="validateForm" />
         </div>
       </q-card-section>
 
@@ -72,18 +81,21 @@
 import { ref } from 'vue';
 import { useQuasar } from 'quasar';
 import { useRouter, useRoute } from 'vue-router';
-import { useAuthStore } from 'src/stores/auth';
+import { RouterLink } from 'vue-router';
+import { SignUp } from 'src/services/signup';
+import type { FetchError } from 'ofetch';
+
 
 const router = useRouter();
 const route = useRoute();
-const authStore = useAuthStore();
 const $q = useQuasar();
 
 //Visibilidad de contraseña
 const isPwd = ref(false);
 const email = ref("");
 const passwd = ref("");
-const rememberMe = ref(false);
+const username = ref("");
+
 
 // Validacion de campos
 const emailRules = [
@@ -98,7 +110,7 @@ const passwordRules = [
 
 // Valida la entrada en el form
 async function validateForm(){
-      if ((email.value === "") && (passwd.value === "")){
+    if ((email.value === "") || (passwd.value === "")){
       $q.notify({ type: 'warning', message: 'Los campos email/contraseña no pueden estar vacios', position: "top" })
       return
     }
@@ -106,13 +118,18 @@ async function validateForm(){
       $q.notify({ type: 'negative', message: 'Introduce email/contraseña válidos', position: "top" })
       return
     }
-    await handleLogin()
+    if (username.value === ""){
+      $q.notify({ type: 'warning', message: 'El campo username no puede estar vacio', position: "top" })
+      return
+    }
+
+    await handleSignUp()
 }
 
 
 
-async function handleLogin() {
-  // DBUG: console.log(email.value, passwd.value, rememberMe.value);
+async function handleSignUp() {
+  // DBUG: console.log(username.value, email.value, passwd.value);
 
 
   if (!$q) {
@@ -122,18 +139,27 @@ async function handleLogin() {
 
   $q.loading.show({
     delay: 100,
-    message: 'Intentando iniciar sesion',
+    message: 'Intentando registrar usuario',
     spinnerColor: 'secondary',
   });
 
   // Aquí usarás await con tu petición a la API
 
-  try {
-    await authStore.login(email.value, passwd.value, rememberMe.value);
+try {
+    await SignUp(username.value, email.value, passwd.value);
     const redirect = (route.query.redirect as string) || '/';
     await router.push(redirect);
-  } catch {
-    $q.notify({ type: 'negative', message: 'Credenciales invalidas' });
+    $q.notify({ type: 'positive', message: 'Usuario registrado con éxito', position: "top" });
+
+  } catch (error: unknown) {
+    const err = error as FetchError;
+    let errorMessage = 'Error al registrar usuario';
+
+    if (err.statusCode === 409) {
+      errorMessage = 'El nombre de usuario ya existe';
+      // DEBUG:console.error('Error al registrar usuario:', err.message);
+    }
+    $q.notify({ type: 'negative', message: errorMessage });
   } finally {
     $q.loading.hide();
   }
@@ -147,12 +173,39 @@ async function handleLogin() {
   margin-bottom: 18px;
 }
 
-.remember {
-  margin-top: 10px;
-  display: flex;
-  justify-content: flex-start;
-  color: rgba(255, 255, 255, 0.8);
+.username{
+  margin-bottom: 18px;
 }
+
+.remember {
+  margin-right: 20px;
+  display: flex;
+  justify-content: flex-start; /*  izquierda */
+}
+
+.remember-signup-container {
+  display: flex;
+  justify-content: space-between; /* espacio entre checkbox y link */
+  align-items: center; /* alinear verticalmente */
+  margin-top: 10px;
+}
+
+
+.login-link {
+  color: $info;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+  cursor: pointer;
+  white-space: nowrap;
+  margin-left: 20px;
+}
+
+.login-link:hover {
+  color: #8bd5ff;
+  text-decoration: underline;
+}
+
 
 /* CARD */
 .my-card {
@@ -243,4 +296,3 @@ async function handleLogin() {
   }
 }
 </style>
-

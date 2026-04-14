@@ -4,7 +4,7 @@
     <q-form class="my-card" bordered @submit.prevent="validateForm">
 
       <q-card-section class="items-center text-center">
-        <div class="text-h6">Login para todos</div>
+        <div class="text-h6">Login - AGM</div>
       </q-card-section>
 
       <q-separator dark inset />
@@ -33,7 +33,7 @@
             label="Password"
             item-aligned
             :rules="passwordRules"
-            class="passwod"
+            class="password"
           >
             <template v-slot:append>
               <q-icon
@@ -48,7 +48,7 @@
           </q-input>
 
           <br />
-          <div class="remeber-signup-container">
+          <div class="remember-signup-container">
           <q-checkbox
             text="dark"
             color="positive"
