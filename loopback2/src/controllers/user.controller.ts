@@ -18,7 +18,8 @@ import {
   SchemaObject,
   RestBindings,
   Response,
-  param
+  param,
+  HttpErrors
 } from '@loopback/rest';
 import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
 import {genSalt, hash} from 'bcryptjs';
@@ -196,6 +197,14 @@ export class UserController {
     })
     newUserRequest: NewUserRequest,
   ): Promise<User> {
+    const foundUser = await this.userRepository.findOne({
+      where: {username: newUserRequest.username},
+    });
+
+    if (foundUser) {
+      throw new HttpErrors.Conflict('Este usuario ya existe');
+    }
+    
     const password = await hash(newUserRequest.password, await genSalt());
     const savedUser = await this.userRepository.create(
       _.omit(newUserRequest, ['password', 'id']),
@@ -241,31 +250,31 @@ export class UserController {
 
 
 
-  @get('/auth/checkAvailableUser/{username}', {
-  responses: {
-    '200': {
-      description: 'User availability check',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            properties: {
-              exists: { type: 'boolean' },
-            },
-          },
-        },
-      },
-    },
-  },
-})
-async checkAvailableUser(
-  @param.path.string('username') username: string,
-): Promise<{ exists: boolean }> {
-  const user = await this.userRepository.findOne({
-    where: { username: username },
-  });
-  return { exists: !!user };
-}
+//   @get('/auth/checkAvailableUser/{username}', {
+//   responses: {
+//     '200': {
+//       description: 'User availability check',
+//       content: {
+//         'application/json': {
+//           schema: {
+//             type: 'object',
+//             properties: {
+//               exists: { type: 'boolean' },
+//             },
+//           },
+//         },
+//       },
+//     },
+//   },
+// })
+// async checkAvailableUser(
+//   @param.path.string('username') username: string,
+// ): Promise<{ exists: boolean }> {
+//   const user = await this.userRepository.findOne({
+//     where: { username: username },
+//   });
+//   return { exists: !!user };
+// }
 
 
 
