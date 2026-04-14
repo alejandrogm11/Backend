@@ -1,8 +1,6 @@
 import { defineStore } from 'pinia';
 import { ofetch } from 'ofetch';
 import type { FetchError } from 'ofetch';
-import { Notify } from 'quasar';
-import { error } from 'console';
 
 interface AuthUser {
   id: string;

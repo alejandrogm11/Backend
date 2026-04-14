@@ -1,7 +1,7 @@
 <template>
   <div class="contenedor">
 
-    <q-form class="my-card" bordered @submit.prevent="handleLogin">
+    <q-form class="my-card" bordered @submit.prevent="validateForm">
 
       <q-card-section class="items-center text-center">
         <div class="text-h6">Login para todos</div>
@@ -10,7 +10,7 @@
       <q-separator dark inset />
 
       <q-card-section class="text-center">
-        <div @keyup.enter="handleLogin">
+        <div @keyup.enter="validateForm">
           <div class="text-h7">Bienvenido</div>
           <br />
           <q-input
@@ -58,7 +58,7 @@
           />
 
           <br />
-          <q-btn push color="info" icon="login" label="Login" @click="handleLogin" />
+          <q-btn push color="info" icon="login" label="Login" @click="validateForm" />
         </div>
       </q-card-section>
 
@@ -76,7 +76,6 @@ import { useAuthStore } from 'src/stores/auth';
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
-
 const $q = useQuasar();
 
 //Visibilidad de contraseña
@@ -96,11 +95,20 @@ const passwordRules = [
   (val: string) => val.length >= 8 || 'Mínimo 8 caracteres',
 ];
 
+// Valida la entrada en el form
+async function validateForm(){
+    if (!(email.value.includes("@")) && !(passwd.value.length >= 8)){
+      $q.notify({ type: 'negative', message: 'Introduce email/contraseña válidos' })
+      return
+    }
+    await handleLogin()
+}
+
+
 
 async function handleLogin() {
   // DBUG: console.log(email.value, passwd.value, rememberMe.value);
 
-  //TODO: Hacer funcion qe valide y llame a handlelogin
 
   if (!$q) {
     console.error('Quasar no está disponible');
@@ -128,62 +136,7 @@ async function handleLogin() {
 
 // Fin del Script
 </script>
-<!--
-<style scoped lang="scss">
-.mail {
-  padding-bottom: 20px;
-}
 
-.remember {
-  margin-left: 20px;
-  display: flex;
-  align-items: left;
-  justify-content: left;
-  color: $dark;
-}
-
-.my-card {
-  max-width: 700;
-  width: 570px;
-}
-.my-card {
-  background: rgba(206, 205, 205, 0.5);
-  backdrop-filter: blur(12px);
-  border-radius: 16px;
-  padding: 24px;
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.contenedor {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  width: 100%;
-}
-/* fondo */
-
-.contenedor {
-  background: linear-gradient(120deg, #205164, #234855, #6ab2d1);
-  background-size: 200% 200%;
-  animation: gradientMove 10s ease-in-out infinite;
-  min-height: 100vh;
-}
-
-/* Animación muy suave */
-@keyframes gradientMove {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-</style> -->
 <style soceped lang="scss">
 .mail {
   margin-bottom: 18px;
@@ -199,7 +152,7 @@ async function handleLogin() {
 /* CARD */
 .my-card {
   width: 100%;
-  max-width: 550px;
+  max-width: 570px;
 
   background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(18px);
