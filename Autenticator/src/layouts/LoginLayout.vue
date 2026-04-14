@@ -33,6 +33,7 @@
             label="Password"
             item-aligned
             :rules="passwordRules"
+            class="passwod"
           >
             <template v-slot:append>
               <q-icon
@@ -58,7 +59,7 @@
           />
 
           <br />
-          <q-btn push color="info" icon="login" label="Login" @click="validateForm" />
+          <q-btn class="btn" push color="info" icon="login" label="Login" @click="validateForm" />
         </div>
       </q-card-section>
 
@@ -80,8 +81,8 @@ const $q = useQuasar();
 
 //Visibilidad de contraseña
 const isPwd = ref(false);
-const email = ref();
-const passwd = ref();
+const email = ref("");
+const passwd = ref("");
 const rememberMe = ref(false);
 
 // Validacion de campos
@@ -97,8 +98,12 @@ const passwordRules = [
 
 // Valida la entrada en el form
 async function validateForm(){
+      if ((email.value === "") && (passwd.value === "")){
+      $q.notify({ type: 'warning', message: 'Los campos email/contraseña no pueden estar vacios', position: "top" })
+      return
+    }
     if (!(email.value.includes("@")) && !(passwd.value.length >= 8)){
-      $q.notify({ type: 'negative', message: 'Introduce email/contraseña válidos' })
+      $q.notify({ type: 'negative', message: 'Introduce email/contraseña válidos', position: "top" })
       return
     }
     await handleLogin()
@@ -183,7 +188,7 @@ async function handleLogin() {
   min-height: 100vh;
   padding: 20px;
 
-  background: linear-gradient(120deg, #1f3c47, #234855, #6ab2d1);
+  background: linear-gradient(120deg, #115570, #2c4f5c, #6ab2d1);
   background-size: 200% 200%;
   animation: gradientMove 12s ease-in-out infinite;
 }
@@ -201,7 +206,7 @@ async function handleLogin() {
 }
 
 /* INPUTS */
-.q-input {
+.mail .passwd {
   margin-bottom: 12px;
 }
 
@@ -211,7 +216,7 @@ async function handleLogin() {
 }
 
 /* BOTON */
-.q-btn {
+.btn {
   width: 100%;
   margin-top: 10px;
   border-radius: 12px;
@@ -220,7 +225,7 @@ async function handleLogin() {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.q-btn:hover {
+.btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
 }
