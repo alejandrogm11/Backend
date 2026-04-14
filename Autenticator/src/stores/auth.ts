@@ -49,16 +49,12 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async logout() {
-      try {
         await ofetch('/api/auth/logout', {
           method: 'POST',
           credentials: 'include',
         });
         this.user = null;
         this.isAuthenticated = false;
-      } catch (error) {
-        console.error(error);
-      }
     },
   },
 });

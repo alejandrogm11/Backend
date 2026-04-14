@@ -41,7 +41,7 @@
         <q-checkbox text="dark" color="positive" left-label v-model="rememberMe" label="Mantener sesión" class="remember"/>
 
         <br>
-        <q-btn push color="info" icon="login" label="Login" @click="debug"/>
+        <q-btn push color="info" icon="login" label="Login" @click="handleLogin"/>
 
 
       </q-card-section>
@@ -55,6 +55,12 @@
 import {ref} from 'vue'
 import { useQuasar } from 'quasar'
 import { ofetch } from "ofetch";
+import { useRouter, useRoute } from 'vue-router'
+import { useAuthStore } from 'src/stores/auth'
+
+const router = useRouter()
+const route = useRoute()
+const authStore = useAuthStore()
 
 const $q = useQuasar()
 
@@ -72,7 +78,7 @@ const rememberMe = ref(false)
 // }
 
 // DEBUG
-async function debug(){
+async function handleLogin(){
   console.log(email.value, passwd.value, rememberMe.value)
 
   if (!$q) {
@@ -89,29 +95,15 @@ async function debug(){
     // Aquí usarás await con tu petición a la API
 
   try{
-    const resp = await ofetch('/api/auth/login', {
-  method: 'POST',
-  body: {
-    email: email.value,
-    password: passwd.value,
-    rememberMe: rememberMe.value
-  },
-  credentials: 'include',
-  headers: {
-    'Content-Type': 'application/json'
-  }});
-
-  console.log('Respuesta:', resp)
-
+    await authStore.login(email.value, passwd.value, rememberMe.value)
+    const redirect = (route.query.redirect as string ) || '/'
+    await router.push(redirect)
   }
-  catch(error){
-    console.error("Error en el login: ", error )
+  catch{
+    $q.notify({type: 'negative', message: 'Credenciales invalidas'})
   }
   finally{
     $q.loading.hide()
-    email.value = ''
-    passwd.value = ''
-    rememberMe.value = false
   }
 }
 
