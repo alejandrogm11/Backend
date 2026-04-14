@@ -26,6 +26,27 @@ export const useAuthStore = defineStore('auth', {
         this.isAuthenticated = false;
       }
     },
+    async login(email: string, password: string, rememberMe: boolean){
+      this.loading = true
+      try{
+      const data = await ofetch('/api/auth/login',{
+        method: 'POST',
+        credentials: 'include',
+        body:
+        {
+          email,
+          password,
+          rememberMe,
+        },
+        headers: {
+    'Content-Type': 'application/json',
+      }})
+      this.user = {id: data.user.id, email}
+      this.isAuthenticated = true
+      } finally{
+        this.loading = false
+      }
+    },
 
     async logout() {
       try {
