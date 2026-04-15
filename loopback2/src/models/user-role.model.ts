@@ -1,4 +1,6 @@
-import {Entity, model, property} from '@loopback/repository';
+import {belongsTo, Entity, model, property} from '@loopback/repository';
+import { Role } from './role.model';
+import { User } from '@loopback/authentication-jwt';
 
 @model()
 export class UserRole extends Entity {
@@ -9,18 +11,11 @@ export class UserRole extends Entity {
   })
   id?: number;
 
-  @property({
-    type: 'number',
-    required: true,
-  })
+  @belongsTo(() => Role, {name: '$role', keyFrom: 'roleId', keyTo: 'id'})
   roleId: number;
 
-  @property({
-    type: 'number',
-    required: true,
-  })
+  @belongsTo(() => User, {name: '$user', keyFrom: 'userId', keyTo: 'id'})
   userId: string;
-
 
   constructor(data?: Partial<UserRole>) {
     super(data);
