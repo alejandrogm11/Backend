@@ -26,7 +26,6 @@ import _ from 'lodash';
 import {UserCredentialsRepository} from '@loopback/authentication-jwt';
 import { validateSignupData } from '../services/signupValidationSchema';
 import { findUserRoles } from '../services/roleFinder.service';
-import { Role } from "../models/role.model";
 import { RoleRepository, UserRoleRepository } from '../repositories';
 
 
@@ -212,9 +211,6 @@ export class UserController {
     if (!result.success) {
       throw new HttpErrors.UnprocessableEntity('Unprocessable Entity / Invalid data');
     }
-
-
-
     
     const foundUser = await this.userRepository.findOne({
       where: {username: newUserRequest.username},
@@ -234,6 +230,15 @@ export class UserController {
       password,
       userId: savedUser.id,
     });
+
+    const defaultrole = await this.roleRepository.findOne({where: {name: 'AUser'}}); // AUser nombre para el rol de Usuario Autenticado
+    
+    if (defaultrole) {
+      await this.userRoleRepository.create({
+        userId: savedUser.id,
+        roleId: defaultrole.id,
+      });
+    }
 
     // await this.userRepository.userCredentials(savedUser.id).create({password});
 
