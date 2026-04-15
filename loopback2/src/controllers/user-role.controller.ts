@@ -155,20 +155,5 @@ export class UserRoleController {
   }
 
 
-  @get('/users/{userId}/roles')
-  @response(200, {
-    description: 'Array of Role model instances for a given user',
-    content: {
-      'application/json': {
-        schema: {
-          type: 'array',
-          items: getModelSchemaRef(Role, {includeRelations: true}),
-        },
-      },
-    },
-  })
-  async getRolesByUserId(@param.path.string('userId') userId: string): Promise<Role[]> {
-    return findUserRoles(userId, this.userRoleRepository, this.roleRepository);
+}
 
-}
-}

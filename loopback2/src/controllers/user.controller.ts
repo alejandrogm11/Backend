@@ -17,13 +17,17 @@ import {
   SchemaObject,
   RestBindings,
   Response,
-  HttpErrors
+  HttpErrors,
+  param
 } from '@loopback/rest';
-import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
+import { SecurityBindings, securityId, UserProfile} from '@loopback/security';
 import {genSalt, hash} from 'bcryptjs';
 import _ from 'lodash';
 import {UserCredentialsRepository} from '@loopback/authentication-jwt';
 import { validateSignupData } from '../services/signupValidationSchema';
+import { findUserRoles } from '../services/roleFinder.service';
+import { Role } from "../models/role.model";
+import { RoleRepository, UserRoleRepository } from '../repositories';
 
 
 @model()
@@ -73,6 +77,11 @@ export class UserController {
     protected userCredentialsRepository: UserCredentialsRepository,
     @inject(RestBindings.Http.RESPONSE)
     private response: Response,
+    @repository(UserRoleRepository)
+    public userRoleRepository : UserRoleRepository,
+    @repository(RoleRepository)
+    public roleRepository: RoleRepository,
+
   ) {}
 
   @post('/auth/login', {
@@ -161,11 +170,13 @@ export class UserController {
     const user = await this.userRepository.findById(userId);
 
     //Consulta para saber los roles de usuario
+    const roles = await findUserRoles(userId, this.userRoleRepository, this.roleRepository);
 
 
     return {
       id: user.id,
       email: user.email,
+      roles: roles.map(role => role.name) // Asumiendo que el modelo Role tiene una propiedad 'name'
     };
   }
 
@@ -258,6 +269,7 @@ export class UserController {
 
 
 
+
 //   @get('/auth/checkAvailableUser/{username}', {
 //   responses: {
 //     '200': {
@@ -283,6 +295,7 @@ export class UserController {
 //   });
 //   return { exists: !!user };
 // }
+
 
 
 
