@@ -2,7 +2,12 @@ import {belongsTo, Entity, model, property} from '@loopback/repository';
 import { Role } from './role.model';
 import { User } from '@loopback/authentication-jwt';
 
-@model()
+@model({
+  name: 'Role_User',   // nombre dbo en la bbDD
+  settings: {
+    schema: 'dbo'
+  }
+})
 export class UserRole extends Entity {
   @property({
     type: 'number',

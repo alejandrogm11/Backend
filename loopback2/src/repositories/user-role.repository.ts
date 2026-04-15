@@ -15,16 +15,3 @@ export class UserRoleRepository extends DefaultCrudRepository<
   }
 }
 
-export async function FindUserRoles(params: { userId: string }, userRoleRepository: UserRoleRepository): Promise<UserRole[]> {
-  const mappings = await userRoleRepository.find({
-    where: { userId: params.userId },
-  });
-
-  const roleIds = mappings.map(mapping => mapping.roleId);
-
-  const roles = await userRoleRepository.find({
-    where: { id: { inq: roleIds } },
-  });
-  
-  return roles.map(role => role.name)
-}

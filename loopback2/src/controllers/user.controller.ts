@@ -160,6 +160,9 @@ export class UserController {
     // Se hace consulta a BBDD para encontrar el
     const user = await this.userRepository.findById(userId);
 
+    //Consulta para saber los roles de usuario
+
+
     return {
       id: user.id,
       email: user.email,

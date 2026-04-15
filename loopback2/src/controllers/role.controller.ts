@@ -26,7 +26,7 @@ export class RoleController {
     public roleRepository : RoleRepository,
   ) {}
 
-  @post('/user/roles')
+  @post('/roles')
   @response(200, {
     description: 'Role model instance',
     content: {'application/json': {schema: getModelSchemaRef(Role)}},
@@ -147,4 +147,7 @@ export class RoleController {
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.roleRepository.deleteById(id);
   }
+
+  
+
 }

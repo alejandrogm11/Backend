@@ -19,11 +19,17 @@ import {
 } from '@loopback/rest';
 import {UserRole} from '../models';
 import {UserRoleRepository} from '../repositories';
+import { findUserRoles } from '../services/roleFinder.service';
+import { RoleRepository } from '../repositories/role.repository';
+import {Role} from '../models/role.model';
 
 export class UserRoleController {
   constructor(
     @repository(UserRoleRepository)
     public userRoleRepository : UserRoleRepository,
+    @repository(RoleRepository)
+    public roleRepository: RoleRepository,
+
   ) {}
 
   @post('/user-roles')
@@ -147,4 +153,22 @@ export class UserRoleController {
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.userRoleRepository.deleteById(id);
   }
+
+
+  @get('/users/{userId}/roles')
+  @response(200, {
+    description: 'Array of Role model instances for a given user',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Role, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async getRolesByUserId(@param.path.string('userId') userId: string): Promise<Role[]> {
+    return findUserRoles(userId, this.userRoleRepository, this.roleRepository);
+
+}
 }
