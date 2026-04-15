@@ -1,4 +1,3 @@
-import { repository } from "@loopback/repository";
 import { Role } from "../models/role.model";
 import { RoleRepository } from "../repositories";
 import {UserRoleRepository} from "../repositories/user-role.repository";

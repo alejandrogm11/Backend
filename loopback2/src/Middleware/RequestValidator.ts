@@ -1,6 +1,6 @@
 import { Request } from "@loopback/rest";
 import { NextFunction, Response } from "express";
-import { ZodSchema, ZodError } from "zod";
+import { ZodSchema } from "zod";
 
 export function validateRequestBody(schema: ZodSchema){
   return (req: Request, res: Response, next: NextFunction) => {

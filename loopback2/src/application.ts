@@ -11,8 +11,6 @@ import path from 'path';
 import {MySequence} from './sequence';
 import cookieParser from 'cookie-parser'
 
-import {CreateValidator} from './Middleware/CreateValidator';
-import {SignupRequestSchema} from "./services/signupValidationSchema";
 
 // Imports de autenticacion JWT
 import {AuthenticationComponent, registerAuthenticationStrategy} from '@loopback/authentication';

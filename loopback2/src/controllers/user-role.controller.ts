@@ -19,9 +19,7 @@ import {
 } from '@loopback/rest';
 import {UserRole} from '../models';
 import {UserRoleRepository} from '../repositories';
-import { findUserRoles } from '../services/roleFinder.service';
 import { RoleRepository } from '../repositories/role.repository';
-import {Role} from '../models/role.model';
 
 export class UserRoleController {
   constructor(
