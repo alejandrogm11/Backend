@@ -29,6 +29,7 @@ export class UserRole extends Entity {
 
 export interface UserRoleRelations {
   // describe navigational properties here
+  
 }
 
 export type UserRoleWithRelations = UserRole & UserRoleRelations;

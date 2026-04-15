@@ -24,10 +24,6 @@ import {genSalt, hash} from 'bcryptjs';
 import _ from 'lodash';
 import {UserCredentialsRepository} from '@loopback/authentication-jwt';
 import { validateSignupData } from '../services/signupValidationSchema';
-import { json } from 'zod/v4/classic/external.cjs';
-
-
-
 
 
 @model()
