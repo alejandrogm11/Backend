@@ -14,18 +14,17 @@ import {
   getModelSchemaRef,
   post,
   requestBody,
-  response,
   SchemaObject,
   RestBindings,
   Response,
-  param,
   HttpErrors
 } from '@loopback/rest';
 import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
 import {genSalt, hash} from 'bcryptjs';
 import _ from 'lodash';
 import {UserCredentialsRepository} from '@loopback/authentication-jwt';
-import { userInfo } from 'os';
+import { validateSignupData } from '../services/signupValidationSchema';
+import { json } from 'zod/v4/classic/external.cjs';
 
 
 
@@ -197,6 +196,16 @@ export class UserController {
     })
     newUserRequest: NewUserRequest,
   ): Promise<User> {
+
+    const result = validateSignupData(newUserRequest);
+
+    if (!result.success) {
+      throw new HttpErrors.UnprocessableEntity('Unprocessable Entity / Invalid data');
+    }
+
+
+
+    
     const foundUser = await this.userRepository.findOne({
       where: {username: newUserRequest.username},
     });

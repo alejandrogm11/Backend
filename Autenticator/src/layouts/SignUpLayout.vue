@@ -155,6 +155,11 @@ try {
     const err = error as FetchError;
     let errorMessage = 'Error al registrar usuario';
 
+    if (err.statusCode === 422) {
+      errorMessage = 'Datos inválidos: ' + (err.data?.message || 'Revisa los campos');
+      // DEBUG:console.error('Error al registrar usuario:', err.data);
+    } else
+
     if (err.statusCode === 409) {
       errorMessage = 'El nombre de usuario ya existe';
       // DEBUG:console.error('Error al registrar usuario:', err.message);
