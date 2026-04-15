@@ -21,6 +21,12 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/SignUpLayout.vue'),
     meta: {requiresAuth: false},
   },
+  // Página de inicio después de iniciar sesión
+  {
+    path: '/home',
+    component: () => import('layouts/HomeLayout.vue'),
+    meta: {requiresAuth: true},
+  },
 
 
     // Always leave this as last one,

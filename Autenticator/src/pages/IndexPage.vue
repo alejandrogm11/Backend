@@ -8,6 +8,7 @@
     ></example-component>
 
     <q-btn color="primary" icon="check" label="Login" to="/auth/login" />
+    <q-btn color="primary" icon="check" label="Home" to="/home" />
 
   </q-page>
 

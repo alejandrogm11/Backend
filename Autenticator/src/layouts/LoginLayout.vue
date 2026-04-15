@@ -1,6 +1,8 @@
 <template>
   <div class="contenedor">
+    <q-btn color="primary" icon="home" label="Home" @click="goHome" class="home-btn">
 
+    </q-btn>
     <q-form class="my-card" bordered @submit.prevent="validateForm">
 
       <q-card-section class="items-center text-center">
@@ -83,7 +85,7 @@ const authStore = useAuthStore();
 const $q = useQuasar();
 
 //Visibilidad de contraseña
-const isPwd = ref(false);
+const isPwd = ref(true);
 const email = ref("");
 const passwd = ref("");
 const rememberMe = ref(false);
@@ -112,7 +114,9 @@ async function validateForm(){
     await handleLogin()
 }
 
-
+async function goHome() {
+  await router.push('/');
+}
 
 async function handleLogin() {
   // DBUG: console.log(email.value, passwd.value, rememberMe.value);
@@ -163,6 +167,15 @@ async function handleLogin() {
   margin-top: 10px;
 }
 
+.home-btn {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
 
 .signup-link {
   color: $info;

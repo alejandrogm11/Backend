@@ -44,7 +44,7 @@
           <q-input
             v-model="passwd"
             standout
-            :type="isPwd ? 'password' : 'text'"
+            :type="isPwd ? 'text': 'password' "
             label="Password"
             item-aligned
             :rules="passwordRules"
@@ -91,7 +91,7 @@ const route = useRoute();
 const $q = useQuasar();
 
 //Visibilidad de contraseña
-const isPwd = ref(false);
+const isPwd = ref(true);
 const email = ref("");
 const passwd = ref("");
 const username = ref("");
