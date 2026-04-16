@@ -1,10 +1,7 @@
 <template>
   <div class="contenedor">
-    <q-btn color="primary" icon="home" label="Home" @click="goHome" class="home-btn">
-
-    </q-btn>
+    <q-btn color="primary" icon="home" label="Home" @click="goHome" class="home-btn"> </q-btn>
     <q-form class="my-card" bordered @submit.prevent="validateForm">
-
       <q-card-section class="items-center text-center">
         <div class="text-h6">Login - AGM</div>
       </q-card-section>
@@ -51,16 +48,18 @@
 
           <br />
           <div class="remember-signup-container">
-          <q-checkbox
-            text="dark"
-            color="positive"
-            left-label
-            v-model="rememberMe"
-            label="Mantener sesión Iniciada"
-            class="remember"
-          />
+            <q-checkbox
+              text="dark"
+              color="positive"
+              left-label
+              v-model="rememberMe"
+              label="Mantener sesión Iniciada"
+              class="remember"
+            />
 
-          <router-link to="/signup" class="signup-link">¿No tienes cuenta? Regístrate</router-link>
+            <router-link to="/signup" class="signup-link"
+              >¿No tienes cuenta? Regístrate</router-link
+            >
           </div>
 
           <br />
@@ -86,8 +85,8 @@ const $q = useQuasar();
 
 //Visibilidad de contraseña
 const isPwd = ref(true);
-const email = ref("");
-const passwd = ref("");
+const email = ref('');
+const passwd = ref('');
 const rememberMe = ref(false);
 
 // Validacion de campos
@@ -102,16 +101,20 @@ const passwordRules = [
 ];
 
 // Valida la entrada en el form
-async function validateForm(){
-      if ((email.value === "") && (passwd.value === "")){
-      $q.notify({ type: 'warning', message: 'Los campos email/contraseña no pueden estar vacios', position: "top" })
-      return
-    }
-    if (!(email.value.includes("@")) && !(passwd.value.length >= 8)){
-      $q.notify({ type: 'negative', message: 'Introduce email/contraseña válidos', position: "top" })
-      return
-    }
-    await handleLogin()
+async function validateForm() {
+  if (email.value === '' && passwd.value === '') {
+    $q.notify({
+      type: 'warning',
+      message: 'Los campos email/contraseña no pueden estar vacios',
+      position: 'top',
+    });
+    return;
+  }
+  if (!email.value.includes('@') && !(passwd.value.length >= 8)) {
+    $q.notify({ type: 'negative', message: 'Introduce email/contraseña válidos', position: 'top' });
+    return;
+  }
+  await handleLogin();
 }
 
 async function goHome() {
@@ -120,7 +123,6 @@ async function goHome() {
 
 async function handleLogin() {
   // DBUG: console.log(email.value, passwd.value, rememberMe.value);
-
 
   if (!$q) {
     console.error('Quasar no está disponible');
@@ -137,8 +139,7 @@ async function handleLogin() {
 
   try {
     await authStore.login(email.value, passwd.value, rememberMe.value);
-    const redirect = (route.query.redirect as string) || '/';
-    await router.push(redirect);
+    await router.push('/home');
   } catch {
     $q.notify({ type: 'negative', message: 'Credenciales invalidas' });
   } finally {
@@ -174,7 +175,9 @@ async function handleLogin() {
   z-index: 1000;
   border-radius: 12px;
   font-weight: 600;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .signup-link {
@@ -191,7 +194,6 @@ async function handleLogin() {
   color: #8bd5ff;
   text-decoration: underline;
 }
-
 
 /* CARD */
 .my-card {
@@ -210,7 +212,9 @@ async function handleLogin() {
 
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
 
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .my-card:hover {
@@ -261,7 +265,9 @@ async function handleLogin() {
   border-radius: 12px;
   font-weight: 600;
   letter-spacing: 0.5px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .btn:hover {

@@ -15,11 +15,9 @@ export async function checkRole(
   });
 
   //  Si no existe el rol, retorna false
-  console.log('role:', role);
 
   if (!role) return false;
 
-  console.log('DETRAS: roleId:', role.id);
 
   //  Busca si el usuario tiene ese rol
   const userRole = await userRoleRepository.findOne({
@@ -31,6 +29,5 @@ export async function checkRole(
 
   //  Retorna true si existe, false si no
 
-  console.log('userRole:', userRole);
   return userRole !== null;
 }
