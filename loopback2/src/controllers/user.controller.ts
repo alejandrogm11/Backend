@@ -1,4 +1,4 @@
-import {authenticate, TokenService} from '@loopback/authentication';
+import { authenticate, TokenService } from '@loopback/authentication';
 import {
   Credentials,
   MyUserService,
@@ -7,8 +7,8 @@ import {
   UserRepository,
   UserServiceBindings,
 } from '@loopback/authentication-jwt';
-import {inject} from '@loopback/core';
-import {model, property, repository} from '@loopback/repository';
+import { inject } from '@loopback/core';
+import { model, property, repository } from '@loopback/repository';
 import {
   get,
   getModelSchemaRef,
@@ -20,10 +20,10 @@ import {
   HttpErrors,
   param
 } from '@loopback/rest';
-import { SecurityBindings, securityId, UserProfile} from '@loopback/security';
-import {genSalt, hash} from 'bcryptjs';
+import { SecurityBindings, securityId, UserProfile } from '@loopback/security';
+import { genSalt, hash } from 'bcryptjs';
 import _ from 'lodash';
-import {UserCredentialsRepository} from '@loopback/authentication-jwt';
+import { UserCredentialsRepository } from '@loopback/authentication-jwt';
 import { validateSignupData } from '../services/signupValidationSchema';
 import { findUserRoles } from '../services/roleFinder.service';
 import { RoleRepository, UserRoleRepository } from '../repositories';
@@ -50,7 +50,7 @@ const CredentialsSchema: SchemaObject = {
       type: 'string',
       minLength: 8,
     },
-    rememberMe: {type: 'boolean'}
+    rememberMe: { type: 'boolean' }
   },
 };
 
@@ -58,7 +58,7 @@ export const CredentialsRequestBody = {
   description: 'The input of login function',
   required: true,
   content: {
-    'application/json': {schema: CredentialsSchema},
+    'application/json': { schema: CredentialsSchema },
   },
 };
 
@@ -68,7 +68,7 @@ export class UserController {
     public jwtService: TokenService,
     @inject(UserServiceBindings.USER_SERVICE)
     public userService: MyUserService,
-    @inject(SecurityBindings.USER, {optional: true})
+    @inject(SecurityBindings.USER, { optional: true })
     public user: UserProfile,
     @repository(UserRepository)
     protected userRepository: UserRepository,
@@ -77,11 +77,11 @@ export class UserController {
     @inject(RestBindings.Http.RESPONSE)
     private response: Response,
     @repository(UserRoleRepository)
-    public userRoleRepository : UserRoleRepository,
+    public userRoleRepository: UserRoleRepository,
     @repository(RoleRepository)
     public roleRepository: RoleRepository,
 
-  ) {}
+  ) { }
 
   @post('/auth/login', {
     responses: {
@@ -104,7 +104,7 @@ export class UserController {
   })
   async login(
     @requestBody(CredentialsRequestBody)
-    credentials: Credentials & {rememberMe?: boolean},
+    credentials: Credentials & { rememberMe?: boolean },
   ): Promise<object> {
     try {
       //verifica credenciales y genera el token
@@ -165,17 +165,18 @@ export class UserController {
   ): Promise<object> {
     const userId = currentUserProfile[securityId];
 
+
     // Se hace consulta a BBDD para encontrar el
     const user = await this.userRepository.findById(userId);
 
     //Consulta para saber los roles de usuario
-    const roles = await findUserRoles(userId, this.userRoleRepository, this.roleRepository);
+    //const roles = await findUserRoles(userId, this.userRoleRepository, this.roleRepository);
 
 
     return {
       id: user.id,
       email: user.email,
-      roles: roles.map(role => role.name) // Asumiendo que el modelo Role tiene una propiedad 'name'
+      //roles: roles.map(role => role.name) // Asumiendo que el modelo Role tiene una propiedad 'name'
     };
   }
 
@@ -211,15 +212,15 @@ export class UserController {
     if (!result.success) {
       throw new HttpErrors.UnprocessableEntity('Unprocessable Entity / Invalid data');
     }
-    
+
     const foundUser = await this.userRepository.findOne({
-      where: {username: newUserRequest.username},
+      where: { username: newUserRequest.username },
     });
 
     if (foundUser) {
       throw new HttpErrors.Conflict('Este usuario ya existe');
     }
-    
+
     const password = await hash(newUserRequest.password, await genSalt());
     const savedUser = await this.userRepository.create(
       _.omit(newUserRequest, ['password', 'id']),
@@ -231,8 +232,8 @@ export class UserController {
       userId: savedUser.id,
     });
 
-    const defaultrole = await this.roleRepository.findOne({where: {name: 'AUser'}}); // AUser nombre para el rol de Usuario Autenticado
-    
+    const defaultrole = await this.roleRepository.findOne({ where: { name: 'AUser' } }); // AUser nombre para el rol de Usuario Autenticado
+
     if (defaultrole) {
       await this.userRoleRepository.create({
         userId: savedUser.id,
@@ -254,7 +255,7 @@ export class UserController {
             schema: {
               type: 'object',
               properties: {
-                message: {type: 'string'},
+                message: { type: 'string' },
               },
             },
           },
@@ -269,41 +270,41 @@ export class UserController {
       sameSite: 'lax',
       path: '/',
     });
-    return {message: 'Logout Succesful'};
+    return { message: 'Logout Succesful' };
   }
 
 
 
 
-//   @get('/auth/checkAvailableUser/{username}', {
-//   responses: {
-//     '200': {
-//       description: 'User availability check',
-//       content: {
-//         'application/json': {
-//           schema: {
-//             type: 'object',
-//             properties: {
-//               exists: { type: 'boolean' },
-//             },
-//           },
-//         },
-//       },
-//     },
-//   },
-// })
-// async checkAvailableUser(
-//   @param.path.string('username') username: string,
-// ): Promise<{ exists: boolean }> {
-//   const user = await this.userRepository.findOne({
-//     where: { username: username },
-//   });
-//   return { exists: !!user };
-// }
+  //   @get('/auth/checkAvailableUser/{username}', {
+  //   responses: {
+  //     '200': {
+  //       description: 'User availability check',
+  //       content: {
+  //         'application/json': {
+  //           schema: {
+  //             type: 'object',
+  //             properties: {
+  //               exists: { type: 'boolean' },
+  //             },
+  //           },
+  //         },
+  //       },
+  //     },
+  //   },
+  // })
+  // async checkAvailableUser(
+  //   @param.path.string('username') username: string,
+  // ): Promise<{ exists: boolean }> {
+  //   const user = await this.userRepository.findOne({
+  //     where: { username: username },
+  //   });
+  //   return { exists: !!user };
+  // }
 
 
 
 
-// Fin user controller
+  // Fin user controller
 }
 

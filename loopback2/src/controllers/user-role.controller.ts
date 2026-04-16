@@ -16,24 +16,32 @@ import {
   del,
   requestBody,
   response,
+  HttpErrors,
 } from '@loopback/rest';
-import {UserRole} from '../models';
-import {UserRoleRepository} from '../repositories';
+import { Role, UserRole } from '../models';
+import { UserRoleRepository } from '../repositories';
 import { RoleRepository } from '../repositories/role.repository';
+import { findUserRoles } from '../services/roleFinder.service';
+import { SecurityBindings, securityId, UserProfile } from '@loopback/security';
+import { inject } from '@loopback/context/dist/inject';
+import { authenticate } from '@loopback/authentication';
+import { checkRole } from '../services/CheckRole.service';
 
 export class UserRoleController {
   constructor(
     @repository(UserRoleRepository)
-    public userRoleRepository : UserRoleRepository,
+    public userRoleRepository: UserRoleRepository,
     @repository(RoleRepository)
     public roleRepository: RoleRepository,
+    @inject(SecurityBindings.USER) currentUserProfile: UserProfile,
 
-  ) {}
+
+  ) { }
 
   @post('/user-roles')
   @response(200, {
     description: 'UserRole model instance',
-    content: {'application/json': {schema: getModelSchemaRef(UserRole)}},
+    content: { 'application/json': { schema: getModelSchemaRef(UserRole) } },
   })
   async create(
     @requestBody({
@@ -54,7 +62,7 @@ export class UserRoleController {
   @get('/user-roles/count')
   @response(200, {
     description: 'UserRole model count',
-    content: {'application/json': {schema: CountSchema}},
+    content: { 'application/json': { schema: CountSchema } },
   })
   async count(
     @param.where(UserRole) where?: Where<UserRole>,
@@ -69,7 +77,7 @@ export class UserRoleController {
       'application/json': {
         schema: {
           type: 'array',
-          items: getModelSchemaRef(UserRole, {includeRelations: true}),
+          items: getModelSchemaRef(UserRole, { includeRelations: true }),
         },
       },
     },
@@ -83,13 +91,13 @@ export class UserRoleController {
   @patch('/user-roles')
   @response(200, {
     description: 'UserRole PATCH success count',
-    content: {'application/json': {schema: CountSchema}},
+    content: { 'application/json': { schema: CountSchema } },
   })
   async updateAll(
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(UserRole, {partial: true}),
+          schema: getModelSchemaRef(UserRole, { partial: true }),
         },
       },
     })
@@ -104,13 +112,13 @@ export class UserRoleController {
     description: 'UserRole model instance',
     content: {
       'application/json': {
-        schema: getModelSchemaRef(UserRole, {includeRelations: true}),
+        schema: getModelSchemaRef(UserRole, { includeRelations: true }),
       },
     },
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(UserRole, {exclude: 'where'}) filter?: FilterExcludingWhere<UserRole>
+    @param.filter(UserRole, { exclude: 'where' }) filter?: FilterExcludingWhere<UserRole>
   ): Promise<UserRole> {
     return this.userRoleRepository.findById(id, filter);
   }
@@ -124,7 +132,7 @@ export class UserRoleController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(UserRole, {partial: true}),
+          schema: getModelSchemaRef(UserRole, { partial: true }),
         },
       },
     })
@@ -144,14 +152,59 @@ export class UserRoleController {
     await this.userRoleRepository.replaceById(id, userRole);
   }
 
-  @del('/user-roles/{id}')
-  @response(204, {
-    description: 'UserRole DELETE success',
-  })
-  async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.userRoleRepository.deleteById(id);
+  // @post('/verify-owner')
+  // @authenticate('jwt-cookie')
+  // async ejecutar(
+  //   @inject(SecurityBindings.USER) currentUserProfile: UserProfile,
+  //   @requestBody({
+  //     required: true,
+  //     content: {
+  //       'application/json': {
+  //         schema: {
+  //           type: 'object',
+  //           required: ['id'],
+  //           properties: {
+  //             id: {
+  //               type: 'string',
+  //             },
+  //           },
+  //         },
+  //       },
+  //     },
+  //   })
+  //   body: { id: string },
+  // ) {
+
+  //   const userId = currentUserProfile[securityId];
+
+  //   const doesRoleExist = await checkRole(userId, 'Ownerrrrrr', this.userRoleRepository, this.roleRepository);
+  //   if (!doesRoleExist) throw new HttpErrors.Unauthorized('User does not have the required role');
+
+
+  //   const roles = await findUserRoles(body.id, this.userRoleRepository, this.roleRepository);
+  //   const mappedRoles = roles.map(role => role.name);
+  //   if (mappedRoles.includes('Owner')) {
+  //     return { isOwner: true };
+  //   }
+  //   return { isOwner: false };
+  // }
+
+
+  @get('/verify-owner')
+  @authenticate('jwt-cookie')
+  async verificarOwner(
+    @inject(SecurityBindings.USER) currentUserProfile: UserProfile,)
+    : Promise<{ isOwner: boolean }> {
+
+    const userId = currentUserProfile[securityId];
+    const doesRoleExist = await checkRole(userId, 'Owner', this.userRoleRepository, this.roleRepository);
+    if (!doesRoleExist) throw new HttpErrors.Unauthorized('User does not have the required role');
+    return { isOwner: true };
   }
 
 
-}
 
+
+
+
+}
