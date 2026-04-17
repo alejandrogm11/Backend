@@ -29,6 +29,13 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true },
   },
 
+  {
+    path: '/dashboard/admin',
+    component: () => import('layouts/HomeLayout.vue'),
+    children: [{ path: '', component: () => import('pages/AdminDashboard.vue') }],
+    meta: { requiresAuth: true },
+  },
+
 
   // Always leave this as last one,
   // but you can also remove it

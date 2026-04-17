@@ -19,11 +19,19 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <q-btn
+      v-show="isVisibleButton"
+      color="positive"
+      icon="terminal"
+      label="AdminPanel"
+      to="/dashboard/admin"
+    />
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 import { ofetch } from 'ofetch';
 import { useRouter } from 'vue-router';
@@ -33,6 +41,17 @@ const router = useRouter();
 const $q = useQuasar();
 
 const isVisible = ref(false);
+const isVisibleButton = ref(false);
+
+onMounted(async () => {
+  const data = await ofetch('/api/verify-owner', {
+    method: 'GET',
+  });
+  if (data) {
+    isVisibleButton.value = data;
+  }
+  console.log(data);
+});
 
 function showDialog() {
   isVisible.value = !isVisible.value;
