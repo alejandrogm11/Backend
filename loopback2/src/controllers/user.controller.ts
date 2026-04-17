@@ -27,6 +27,7 @@ import { UserCredentialsRepository } from '@loopback/authentication-jwt';
 import { validateSignupData } from '../services/signupValidationSchema';
 import { findUserRoles } from '../services/roleFinder.service';
 import { RoleRepository, UserRoleRepository } from '../repositories';
+import { Console } from 'console';
 
 
 @model()
@@ -165,18 +166,12 @@ export class UserController {
   ): Promise<object> {
     const userId = currentUserProfile[securityId];
 
-
     // Se hace consulta a BBDD para encontrar el
     const user = await this.userRepository.findById(userId);
-
-    //Consulta para saber los roles de usuario
-    //const roles = await findUserRoles(userId, this.userRoleRepository, this.roleRepository);
-
 
     return {
       id: user.id,
       email: user.email,
-      //roles: roles.map(role => role.name) // Asumiendo que el modelo Role tiene una propiedad 'name'
     };
   }
 
@@ -226,23 +221,16 @@ export class UserController {
       _.omit(newUserRequest, ['password', 'id']),
     );
 
-    // Introduce el
+    // Introduce el usuario en la bbdd
     await this.userCredentialsRepository.create({
       password,
       userId: savedUser.id,
     });
 
-    const defaultrole = await this.roleRepository.findOne({ where: { name: 'AUser' } }); // AUser nombre para el rol de Usuario Autenticado
-
-    if (defaultrole) {
-      await this.userRoleRepository.create({
-        userId: savedUser.id,
-        roleId: defaultrole.id,
-      });
-    }
-
-    // await this.userRepository.userCredentials(savedUser.id).create({password});
-
+    await this.userRoleRepository.create({
+      userId: savedUser.id,
+      roleId: 3,
+    });
     return savedUser;
   }
 
