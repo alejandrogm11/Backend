@@ -9,6 +9,15 @@ export interface User {
   email: string;
 }
 
+export interface Rol {
+  name: string;
+}
+export interface UserParsed {
+  id: string;
+  label: string;
+  value: string;
+}
+
 export async function getAllUsers() {
   const $q = useQuasar();
   try {

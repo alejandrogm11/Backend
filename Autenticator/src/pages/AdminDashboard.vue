@@ -7,13 +7,25 @@
           <q-separator spaced inset vertical dark />
           <div class="searchBar">
             <q-select
-              user-input
+              use-input
               v-model="selectedUser"
               :options="users"
+              option-value="value"
+              option-label="label"
               label="Busqueda de Usuario"
               filled
               clearable
             />
+
+            <q-separator spaced inset vertical dark />
+
+            <div class="searchBar">
+              <div class="text-h5" style="justify-self: center">Roles</div>
+              <q-input v-model="cUserRoles" filled readonly> </q-input>
+            </div>
+
+            {{ userRoles }}
+            {{ selectedUser }}
           </div>
         </q-card>
       </div>
@@ -34,18 +46,42 @@
 </template>
 
 <script setup lang="ts">
+import { computed, unref } from '@vue/reactivity';
 import { ofetch } from 'ofetch';
 import { useQuasar } from 'quasar';
-import { getAllUsers } from 'src/services/getAllUsers.service';
-import { onMounted, ref } from 'vue';
+import { getAllUsers, Rol, UserParsed } from 'src/services/getAllUsers.service';
+import { onMounted, ref, watch } from 'vue';
 
 const $q = useQuasar();
 const users = ref([]);
-const selectedUser = ref();
-
+const selectedUser = ref<UserParsed>();
+const cUserIdUrl = computed(() => selectedUser.value?.value ?? '');
+const roles = ref<Rol[]>([]);
+const userRoles = ref<string[]>([]);
+const cUserRoles = computed(() => userRoles.value.join(', '));
 onMounted(async () => {
   users.value = await getAllUsers();
 });
+
+watch(cUserIdUrl, async (userId) => {
+  if (!userId) {
+    userRoles.value = [];
+    return;
+  }
+
+  try {
+    const data = await getUserRoles(userId);
+    userRoles.value = data.map((role) => role.name);
+  } catch (e) {
+    console.error(e);
+  }
+});
+
+async function getUserRoles(userId: string): Promise<Rol[]> {
+  return await ofetch<Rol[]>(`/api/users/obtainRoles/${userId}`);
+}
+
+const funtcheck = getUserRoles('8147dd3e-3716-4fef-bd07-1f581b3d0616');
 </script>
 <style scoped lang="scss">
 .searchBar {
