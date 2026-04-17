@@ -8,7 +8,7 @@ import {
   UserServiceBindings,
 } from '@loopback/authentication-jwt';
 import { inject } from '@loopback/core';
-import { model, property, repository } from '@loopback/repository';
+import { Filter, model, property, repository } from '@loopback/repository';
 import {
   get,
   getModelSchemaRef,
@@ -22,12 +22,13 @@ import {
 } from '@loopback/rest';
 import { SecurityBindings, securityId, UserProfile } from '@loopback/security';
 import { genSalt, hash } from 'bcryptjs';
-import _ from 'lodash';
+import _, { filter } from 'lodash';
 import { UserCredentialsRepository } from '@loopback/authentication-jwt';
 import { validateSignupData } from '../services/signupValidationSchema';
 import { findUserRoles } from '../services/roleFinder.service';
 import { RoleRepository, UserRoleRepository } from '../repositories';
 import { Console } from 'console';
+import { checkRole } from '../services/CheckRole.service';
 
 
 @model()
@@ -263,32 +264,33 @@ export class UserController {
 
 
 
+  @authenticate('jwt-cookie')
+  @get('/admin/users', {
 
-  //   @get('/auth/checkAvailableUser/{username}', {
-  //   responses: {
-  //     '200': {
-  //       description: 'User availability check',
-  //       content: {
-  //         'application/json': {
-  //           schema: {
-  //             type: 'object',
-  //             properties: {
-  //               exists: { type: 'boolean' },
-  //             },
-  //           },
-  //         },
-  //       },
-  //     },
-  //   },
-  // })
-  // async checkAvailableUser(
-  //   @param.path.string('username') username: string,
-  // ): Promise<{ exists: boolean }> {
-  //   const user = await this.userRepository.findOne({
-  //     where: { username: username },
-  //   });
-  //   return { exists: !!user };
-  // }
+    responses: {
+      '200': {
+        description: 'Return all Users',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'string',
+            },
+          },
+        },
+      },
+    },
+  }
+  ) async getAllUsers(@inject(SecurityBindings.USER) currentUserProfile: UserProfile,
+    @param.filter(User) filter?: Filter<User>,
+
+  ) {
+
+    const userId = currentUserProfile[securityId]
+    const doesRoleExist = await checkRole(userId, 'Admin', this.userRoleRepository, this.roleRepository);
+    if (!doesRoleExist) throw new HttpErrors.Unauthorized('User does not have the required role');
+    return this.userRepository.find(filter)
+  }
+
 
 
 

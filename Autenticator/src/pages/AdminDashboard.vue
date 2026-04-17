@@ -6,11 +6,7 @@
           <div class="text-h5 text-weight-bold">Role Manager</div>
           <q-separator spaced inset vertical dark />
           <div class="searchBar">
-            <q-input v-model="si" type="search" label="Buacar Usuario" class="">
-              <template v-slot:append>
-                <q-icon name="troubleshoot" />
-              </template>
-            </q-input>
+            <q-select user-input v-model="si" :options="" label="Busqueda de Usuario" filled clearable />
           </div>
         </q-card>
       </div>
