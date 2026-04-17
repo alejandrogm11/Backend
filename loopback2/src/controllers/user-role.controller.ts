@@ -21,11 +21,11 @@ import {
 import { Role, UserRole } from '../models';
 import { UserRoleRepository } from '../repositories';
 import { RoleRepository } from '../repositories/role.repository';
-import { findUserRoles } from '../services/roleFinder.service';
 import { SecurityBindings, securityId, UserProfile } from '@loopback/security';
-import { inject } from '@loopback/context/dist/inject';
+import { inject } from '@loopback/context'
 import { authenticate } from '@loopback/authentication';
 import { checkRole } from '../services/CheckRole.service';
+import { UserRoleService } from '../services/getAllRoles.service';
 
 export class UserRoleController {
   constructor(
@@ -33,8 +33,8 @@ export class UserRoleController {
     public userRoleRepository: UserRoleRepository,
     @repository(RoleRepository)
     public roleRepository: RoleRepository,
-    @inject(SecurityBindings.USER) currentUserProfile: UserProfile,
-
+    @inject('services.UserRoleService')
+    public userRoleService: UserRoleService,
 
   ) { }
 
@@ -201,6 +201,17 @@ export class UserRoleController {
     if (!doesRoleExist) throw new HttpErrors.Unauthorized('User does not have the required role');
     return { isOwner: true };
   }
+
+
+  //
+  @get('/users/obtainRoles/{id}')
+  async getAllRolesByID(
+    @param.path.string('id') id: string,
+  ) {
+    return this.userRoleService.getAllRoles(id);
+  }
+
+
 
 
 

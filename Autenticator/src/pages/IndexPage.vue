@@ -46,6 +46,7 @@ const isVisibleButton = ref(false);
 onMounted(async () => {
   const data = await ofetch('/api/verify-owner', {
     method: 'GET',
+    credentials: 'include',
   });
   if (data) {
     isVisibleButton.value = data;

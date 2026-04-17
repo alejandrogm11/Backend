@@ -1,45 +1,45 @@
-import {BootMixin} from '@loopback/boot';
-import {ApplicationConfig} from '@loopback/core';
+import { BootMixin } from '@loopback/boot';
+import { ApplicationConfig } from '@loopback/core';
 import {
   RestExplorerBindings,
   RestExplorerComponent,
 } from '@loopback/rest-explorer';
-import {RepositoryMixin} from '@loopback/repository';
-import {RestApplication} from '@loopback/rest';
-import {ServiceMixin} from '@loopback/service-proxy';
+import { RepositoryMixin } from '@loopback/repository';
+import { RestApplication } from '@loopback/rest';
+import { ServiceMixin } from '@loopback/service-proxy';
 import path from 'path';
-import {MySequence} from './sequence';
+import { MySequence } from './sequence';
 import cookieParser from 'cookie-parser'
 
 
 // Imports de autenticacion JWT
-import {AuthenticationComponent, registerAuthenticationStrategy} from '@loopback/authentication';
+import { AuthenticationComponent, registerAuthenticationStrategy } from '@loopback/authentication';
 import {
   JWTAuthenticationComponent,
   UserServiceBindings,
 } from '@loopback/authentication-jwt';
-import {AgmmssqlDataSource} from './datasources/agm-mssql.datasource';
-import {UserRepository, UserCredentialsRepository} from './repositories';
-import {JwtCookieStrategy} from './services/jwt-cookie.strategy';
-
-export {ApplicationConfig};
+import { AgmmssqlDataSource } from './datasources/agm-mssql.datasource';
+import { UserRepository, UserCredentialsRepository } from './repositories';
+import { JwtCookieStrategy } from './services/jwt-cookie.strategy';
+import { UserRoleService } from './services/getAllRoles.service';
+export { ApplicationConfig };
 
 export class Loopback2Application extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
 ) {
   constructor(options: ApplicationConfig = {}) {
-      super({                              // ← cambia esta línea
-    ...options,
-    rest: {
-      ...options.rest,
-      cors: {
-        origin: 'http://localhost:9000',
-        credentials: true,
-        allowedHeaders: ['Content-Type'],
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    super({                              // ← cambia esta línea
+      ...options,
+      rest: {
+        ...options.rest,
+        cors: {
+          origin: 'http://localhost:9000',
+          credentials: true,
+          allowedHeaders: ['Content-Type'],
+          methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+        },
       },
-    },
-  }); 
+    });
 
     // Set up the custom sequence
     this.sequence(MySequence);
@@ -56,19 +56,24 @@ export class Loopback2Application extends BootMixin(
     });
     this.component(RestExplorerComponent);
 
-// ===== COMPONENTES DE AUTENTICACION JWT =====
-this.component(AuthenticationComponent);
-this.component(JWTAuthenticationComponent);
-registerAuthenticationStrategy(this, JwtCookieStrategy);
+    // ===== COMPONENTES DE AUTENTICACION JWT =====
+    this.component(AuthenticationComponent);
+    this.component(JWTAuthenticationComponent);
+    registerAuthenticationStrategy(this, JwtCookieStrategy);
 
-// ===== DATASOURCE CONFIGURATION =====
-// El JWT component busca un datasource con clave 'datasources.db'
-// Registramos agmmssql como el datasource predeterminado
-this.bind('datasources.db').to(AgmmssqlDataSource);
+    // ===== DATASOURCE CONFIGURATION =====
+    // El JWT component busca un datasource con clave 'datasources.db'
+    // Registramos agmmssql como el datasource predeterminado
+    this.bind('datasources.db').to(AgmmssqlDataSource);
 
-// ===== BINDING DE REPOSITORIOS PARA JWT =====
-this.bind(UserServiceBindings.USER_REPOSITORY).toClass(UserRepository);
-this.bind(UserServiceBindings.USER_CREDENTIALS_REPOSITORY).toClass(UserCredentialsRepository);
+
+    this.bind('services.UserRoleService').toClass(UserRoleService);
+
+    // ===== BINDING DE REPOSITORIOS PARA JWT =====
+    this.bind(UserServiceBindings.USER_REPOSITORY).toClass(UserRepository);
+    this.bind(UserServiceBindings.USER_CREDENTIALS_REPOSITORY).toClass(UserCredentialsRepository);
+
+
 
     this.projectRoot = __dirname;
     // Customize @loopback/boot Booter Conventions here

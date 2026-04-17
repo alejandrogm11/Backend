@@ -6,7 +6,14 @@
           <div class="text-h5 text-weight-bold">Role Manager</div>
           <q-separator spaced inset vertical dark />
           <div class="searchBar">
-            <q-select user-input v-model="si" :options="" label="Busqueda de Usuario" filled clearable />
+            <q-select
+              user-input
+              v-model="selectedUser"
+              :options="users"
+              label="Busqueda de Usuario"
+              filled
+              clearable
+            />
           </div>
         </q-card>
       </div>
@@ -27,9 +34,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ofetch } from 'ofetch';
+import { useQuasar } from 'quasar';
+import { getAllUsers } from 'src/services/getAllUsers.service';
+import { onMounted, ref } from 'vue';
 
-const si = ref();
+const $q = useQuasar();
+const users = ref([]);
+const selectedUser = ref();
+
+onMounted(async () => {
+  users.value = await getAllUsers();
+});
 </script>
 <style scoped lang="scss">
 .searchBar {
