@@ -6,7 +6,7 @@ const config = {
   name: 'agmmssql',
   connector: 'mssql',
   host: process.env.DB_HOST || 'localhost',
-  port: Number(process.env.DB_PORT),
+  port: Number(process.env.DB_PORT) || 1433,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
@@ -14,6 +14,8 @@ const config = {
     enableArithAbort: true
   }
 };
+
+
 
 // Observe application's life cycle to disconnect the datasource when
 // application is stopped. This allows the application to be shut down

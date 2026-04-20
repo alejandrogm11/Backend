@@ -1,14 +1,13 @@
 services:
-
   # ──────────────────────────────
   # SQL SERVER
   # ──────────────────────────────
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2025-latest
     environment:
-      ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: "MiPassword123!"
-      MSSQL_PID: "Developer"
+      ACCEPT_EULA: Y
+      MSSQL_SA_PASSWORD: MiPassword123!
+      MSSQL_PID: Developer
     ports:
       - "1433:1433"
     volumes:
@@ -16,7 +15,7 @@ services:
     networks:
       - app-network
     deploy:
-      replicas: 1                  # SQL Server solo 1 réplica (tiene estado)
+      replicas: 1
       restart_policy:
         condition: on-failure
         delay: 10s
@@ -24,9 +23,38 @@ services:
       placement:
         constraints:
           - node.role == manager
+
+  # ──────────────────────────────
+  # LOOPBACK API
+  # ──────────────────────────────
+  loopback-app:
+    image: prueba-loopback1:1.0
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: sqlserver
+      DB_PORT: 1433
+      DB_USER: "sa"
+      DB_PASSWORD: MiPassword123!
+      DB_NAME: AGMPRUEBAS
+    depends_on:
+      - sqlserver
+    networks:
+      - app-network
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+      placement:
+        constraints:
+          - node.role == manager
+
 volumes:
   sqlserver_data:
     driver: local
+
 networks:
   app-network:
-    driver: overlay 
+    driver: overlay
