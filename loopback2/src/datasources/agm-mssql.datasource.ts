@@ -1,15 +1,15 @@
-import {inject, lifeCycleObserver, LifeCycleObserver} from '@loopback/core';
-import {juggler} from '@loopback/repository';
+import { inject, lifeCycleObserver, LifeCycleObserver } from '@loopback/core';
+import { juggler } from '@loopback/repository';
+import 'dotenv/config';
 
 const config = {
   name: 'agmmssql',
   connector: 'mssql',
-  url: 'mssql://pruebassSQL:MiContraseñaSegura123!@localhost/AGMPRUEBAS',
-  host: 'localhost',
-  port: 1433,
-  user: 'pruebassSQL',
-  password: 'MiContraseñaSegura123!',
-  database: 'AGMPRUEBAS',
+  host: process.env.DB_HOST || 'localhost',
+  port: Number(process.env.DB_PORT),
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   options: {
     enableArithAbort: true
   }
@@ -26,7 +26,7 @@ export class AgmmssqlDataSource extends juggler.DataSource
   static readonly defaultConfig = config;
 
   constructor(
-    @inject('datasources.config.agmmssql', {optional: true})
+    @inject('datasources.config.agmmssql', { optional: true })
     dsConfig: object = config,
   ) {
     super(dsConfig);

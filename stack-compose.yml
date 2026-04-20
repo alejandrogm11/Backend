@@ -1,0 +1,32 @@
+services:
+
+  # ──────────────────────────────
+  # SQL SERVER
+  # ──────────────────────────────
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2025-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "MiPassword123!"
+      MSSQL_PID: "Developer"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - app-network
+    deploy:
+      replicas: 1                  # SQL Server solo 1 réplica (tiene estado)
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+      placement:
+        constraints:
+          - node.role == manager
+volumes:
+  sqlserver_data:
+    driver: local
+networks:
+  app-network:
+    driver: overlay 

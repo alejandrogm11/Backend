@@ -23,6 +23,9 @@ import { UserRepository, UserCredentialsRepository } from './repositories';
 import { JwtCookieStrategy } from './services/jwt-cookie.strategy';
 import { UserRoleService } from './services/getAllRoles.service';
 export { ApplicationConfig };
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export class Loopback2Application extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
