@@ -25,6 +25,8 @@ import { authenticate } from '@loopback/authentication';
 import { UserRoleService } from '../services/getAllRoles.service';
 import { RoleChecker } from '../services/validations/CheckRole.service';
 import { service } from '@loopback/core';
+import { CreateUserRoleRequest, GetRoleID } from '../services/getRoleID.service';
+import { ValidateUserID } from '../services/validations/validateUserID.service';
 
 export class UserRoleController {
   constructor(
@@ -36,10 +38,16 @@ export class UserRoleController {
     public roleRepository: RoleRepository,
     @inject('services.UserRoleService')
     public userRoleService: UserRoleService,
-
+    @inject(SecurityBindings.USER)
+    public currentUserProfile: UserProfile,
+    @service(GetRoleID)
+    public getRoleID: GetRoleID,
+    @service(ValidateUserID)
+    public validateUserID: ValidateUserID,
   ) { }
 
   @post('/user-roles')
+  @authenticate('jwt-cookie')
   @response(200, {
     description: 'UserRole model instance',
     content: { 'application/json': { schema: getModelSchemaRef(UserRole) } },
@@ -48,16 +56,29 @@ export class UserRoleController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(UserRole, {
-            title: 'NewUserRole',
-            exclude: ['id'],
-          }),
+          schema: {
+            type: 'object',
+            required: ['idUsuario', 'roleName'],
+            properties: {
+              idUsuario: { type: 'string' },
+              roleName: { type: 'string' },
+            },
+          },
         },
       },
     })
-    userRole: Omit<UserRole, 'id'>,
+    body: CreateUserRoleRequest,
   ): Promise<UserRole> {
-    return this.userRoleRepository.create(userRole);
+    const doesRoleExist = await this.roleChecker.checkRole(this.currentUserProfile[securityId], 'Admin',);
+    if (!doesRoleExist) {
+      throw new HttpErrors.Unauthorized("You are not authorized")
+    }
+    await this.validateUserID.validateUserID(body.idUsuario)
+    const roleId = await this.getRoleID.getRoleID(body.roleName)
+    return this.userRoleRepository.create({
+      userId: body.idUsuario,
+      roleId: roleId,
+    });
   }
 
   @get('/user-roles/count')
@@ -153,70 +174,24 @@ export class UserRoleController {
     await this.userRoleRepository.replaceById(id, userRole);
   }
 
-  // @post('/verify-owner')
-  // @authenticate('jwt-cookie')
-  // async ejecutar(
-  //   @inject(SecurityBindings.USER) currentUserProfile: UserProfile,
-  //   @requestBody({
-  //     required: true,
-  //     content: {
-  //       'application/json': {
-  //         schema: {
-  //           type: 'object',
-  //           required: ['id'],
-  //           properties: {
-  //             id: {
-  //               type: 'string',
-  //             },
-  //           },
-  //         },
-  //       },
-  //     },
-  //   })
-  //   body: { id: string },
-  // ) {
-
-  //   const userId = currentUserProfile[securityId];
-
-  //   const doesRoleExist = await checkRole(userId, 'Ownerrrrrr', this.userRoleRepository, this.roleRepository);
-  //   if (!doesRoleExist) throw new HttpErrors.Unauthorized('User does not have the required role');
-
-
-  //   const roles = await findUserRoles(body.id, this.userRoleRepository, this.roleRepository);
-  //   const mappedRoles = roles.map(role => role.name);
-  //   if (mappedRoles.includes('Owner')) {
-  //     return { isOwner: true };
-  //   }
-  //   return { isOwner: false };
-  // }
 
 
   @get('/verify-owner')
   @authenticate('jwt-cookie')
-  async verificarOwner(
-    @inject(SecurityBindings.USER) currentUserProfile: UserProfile,)
-    : Promise<{ isOwner: boolean }> {
-
-    const userId = currentUserProfile[securityId];
+  async verificarOwner(): Promise<{ isOwner: boolean }> {
+    const userId = this.currentUserProfile[securityId];
     const doesRoleExist = await this.roleChecker.checkRole(userId, 'Owner',);
     if (!doesRoleExist) throw new HttpErrors.Unauthorized('User does not have the required role');
     return { isOwner: true };
   }
 
 
-  //
+  @authenticate('jwt-cookie')
   @get('/users/obtainRoles/{id}')
   async getAllRolesByID(
     @param.path.string('id') id: string,
   ) {
     return this.userRoleService.getAllRoles(id);
   }
-
-
-
-
-
-
-
 
 }

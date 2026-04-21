@@ -12,6 +12,7 @@ services:
       - "1433:1433"
     volumes:
       - sqlserver_data:/var/opt/mssql
+      - public_directory:/usr/share/nginx/html
     networks:
       - app-network
     deploy:
@@ -53,6 +54,8 @@ services:
 
 volumes:
   sqlserver_data:
+    driver: local
+  public_directory:
     driver: local
 
 networks:

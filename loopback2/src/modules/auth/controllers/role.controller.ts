@@ -33,7 +33,7 @@ export class RoleController {
     @service(FindAllAvailableUserRoles)
     public findAllAvailableUserRoles: FindAllAvailableUserRoles,
     @inject(SecurityBindings.USER)
-    public user: UserProfile,
+    public currentUserProfile: UserProfile,
     @service(RoleChecker)
     public roleChecker: RoleChecker,
   ) { }
@@ -160,14 +160,13 @@ export class RoleController {
     await this.roleRepository.deleteById(id);
   }
 
-
-  @get('/admin/available-roles/{id}')
   @authenticate('jwt-cookie')
+  @get('/admin/available-roles/{id}')
   @response(200, {
     description: 'All available roles for a user',
   })
   async getAvailableRoles(@param.path.string('id') id: string): Promise<Role> {
-    const hasRole = await this.roleChecker.checkRole(this.user[securityId], 'Admin');
+    const hasRole = await this.roleChecker.checkRole(this.currentUserProfile[securityId], 'Admin');
     if (!hasRole) {
       throw new HttpErrors.Unauthorized('You are Unauthorized')
     }

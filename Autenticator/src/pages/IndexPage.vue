@@ -51,7 +51,6 @@ onMounted(async () => {
   if (data) {
     isVisibleButton.value = data;
   }
-  console.log(data);
 });
 
 function showDialog() {
