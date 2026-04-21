@@ -11,7 +11,6 @@ export const SignupRequestSchema = z.object({
 export type SignupRequest = z.infer<typeof SignupRequestSchema>;
 
 
-// TODO: Refactorizar para separar validadores por campos
 
 export function validateSignup(schema: ZodSchema) {
   return (req: Request, res: Response, next: NextFunction) => {

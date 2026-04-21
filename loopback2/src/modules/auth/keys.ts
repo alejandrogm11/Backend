@@ -14,13 +14,11 @@ export namespace AuthBindings {
   /**
    * Binding key for AuthComponent
    */
-  export const COMPONENT = BindingKey.create<AuthComponent>('components.AuthComponents',)
+  export const COMPONENT = BindingKey.create<AuthComponent>('components.AuthComponents')
 
   /**
    * Binding key for component DataSource
    */
   export const DATASOURCE = BindingKey.create<JugglerDataSource>(`auth`)
-
-
 
 }
