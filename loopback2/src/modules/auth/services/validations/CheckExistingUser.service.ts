@@ -18,7 +18,8 @@ export class UserExist{
       where: {username: username} // Busca el usuario en la BBDD
     })
     if (foundUser){
-      throw new HttpErrors.Conflict('User already exists')
+      return true
     }
+    return false
   }
 }

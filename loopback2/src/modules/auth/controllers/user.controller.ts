@@ -216,7 +216,9 @@ export class UserController {
       throw new HttpErrors.UnprocessableEntity('Unprocessable Entity / Invalid data');
     }
     // Comprobamos si el usuario existe en BBDD
-    this.userExist.findExistingUser(newUserRequest.username)
+    if (await this.userExist.findExistingUser(newUserRequest.username)){
+      throw new HttpErrors.Conflict("Credentials already exist")
+    }
 
 
     // Se hashea la password y la introducimos en BBDD
