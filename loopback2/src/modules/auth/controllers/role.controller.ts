@@ -16,20 +16,32 @@ import {
   del,
   requestBody,
   response,
+  HttpErrors,
 } from '@loopback/rest';
-import {Role} from '../models';
-import {RoleRepository} from '../repositories';
+import { Role } from '../models';
+import { RoleRepository } from '../repositories';
+import { inject, service } from '@loopback/core';
+import { FindAllAvailableUserRoles } from '../services/getAllAvailableUserRoles.service';
+import { authenticate } from '@loopback/authentication';
+import { SecurityBindings, securityId, UserProfile } from '@loopback/security';
+import { RoleChecker } from '../services/validations/CheckRole.service';
 
 export class RoleController {
   constructor(
     @repository(RoleRepository)
-    public roleRepository : RoleRepository,
-  ) {}
+    public roleRepository: RoleRepository,
+    @service(FindAllAvailableUserRoles)
+    public findAllAvailableUserRoles: FindAllAvailableUserRoles,
+    @inject(SecurityBindings.USER)
+    public user: UserProfile,
+    @service(RoleChecker)
+    public roleChecker: RoleChecker,
+  ) { }
 
   @post('/roles')
   @response(200, {
     description: 'Role model instance',
-    content: {'application/json': {schema: getModelSchemaRef(Role)}},
+    content: { 'application/json': { schema: getModelSchemaRef(Role) } },
   })
   async create(
     @requestBody({
@@ -50,7 +62,7 @@ export class RoleController {
   @get('/roles/count')
   @response(200, {
     description: 'Role model count',
-    content: {'application/json': {schema: CountSchema}},
+    content: { 'application/json': { schema: CountSchema } },
   })
   async count(
     @param.where(Role) where?: Where<Role>,
@@ -65,7 +77,7 @@ export class RoleController {
       'application/json': {
         schema: {
           type: 'array',
-          items: getModelSchemaRef(Role, {includeRelations: true}),
+          items: getModelSchemaRef(Role, { includeRelations: true }),
         },
       },
     },
@@ -79,13 +91,13 @@ export class RoleController {
   @patch('/roles')
   @response(200, {
     description: 'Role PATCH success count',
-    content: {'application/json': {schema: CountSchema}},
+    content: { 'application/json': { schema: CountSchema } },
   })
   async updateAll(
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Role, {partial: true}),
+          schema: getModelSchemaRef(Role, { partial: true }),
         },
       },
     })
@@ -100,13 +112,13 @@ export class RoleController {
     description: 'Role model instance',
     content: {
       'application/json': {
-        schema: getModelSchemaRef(Role, {includeRelations: true}),
+        schema: getModelSchemaRef(Role, { includeRelations: true }),
       },
     },
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(Role, {exclude: 'where'}) filter?: FilterExcludingWhere<Role>
+    @param.filter(Role, { exclude: 'where' }) filter?: FilterExcludingWhere<Role>
   ): Promise<Role> {
     return this.roleRepository.findById(id, filter);
   }
@@ -120,7 +132,7 @@ export class RoleController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Role, {partial: true}),
+          schema: getModelSchemaRef(Role, { partial: true }),
         },
       },
     })
@@ -148,6 +160,18 @@ export class RoleController {
     await this.roleRepository.deleteById(id);
   }
 
-  
+
+  @get('/admin/available-roles/{userId}')
+  @authenticate('jwt-cookie')
+  @response(200, {
+    description: 'All available roles for a user',
+  })
+  async getAvailableRoles(@param.path.number('userid') id: string): Promise<Role> {
+    if (await this.roleChecker.checkRole(this.user[securityId], 'Admin')) {
+      throw new HttpErrors.Unauthorized('You are Unauthorized')
+    }
+    return await this.findAllAvailableUserRoles.findAllAvailableUserRoles(id)
+  }
+
 
 }

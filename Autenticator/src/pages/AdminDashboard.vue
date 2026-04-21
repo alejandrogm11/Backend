@@ -22,10 +22,9 @@
             <div class="searchBar">
               <div class="text-h5" style="justify-self: center">Roles</div>
               <q-input v-model="cUserRoles" filled readonly> </q-input>
-            </div>
 
-            {{ userRoles }}
-            {{ selectedUser }}
+              <div class="text-h5" style="justify-self: center">Añadir Roles</div>
+            </div>
           </div>
         </q-card>
       </div>
@@ -46,17 +45,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, unref } from '@vue/reactivity';
+import { computed } from 'vue';
 import { ofetch } from 'ofetch';
 import { useQuasar } from 'quasar';
-import { getAllUsers, Rol, UserParsed } from 'src/services/getAllUsers.service';
+import type { Rol, UserParsed } from 'src/services/getAllUsers.service';
+import { getAllUsers } from 'src/services/getAllUsers.service';
 import { onMounted, ref, watch } from 'vue';
 
 const $q = useQuasar();
 const users = ref([]);
 const selectedUser = ref<UserParsed>();
 const cUserIdUrl = computed(() => selectedUser.value?.value ?? '');
-const roles = ref<Rol[]>([]);
 const userRoles = ref<string[]>([]);
 const cUserRoles = computed(() => userRoles.value.join(', '));
 onMounted(async () => {
@@ -81,7 +80,10 @@ async function getUserRoles(userId: string): Promise<Rol[]> {
   return await ofetch<Rol[]>(`/api/users/obtainRoles/${userId}`);
 }
 
-const funtcheck = getUserRoles('8147dd3e-3716-4fef-bd07-1f581b3d0616');
+
+
+
+
 </script>
 <style scoped lang="scss">
 .searchBar {

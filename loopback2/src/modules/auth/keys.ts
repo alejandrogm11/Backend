@@ -5,6 +5,7 @@ import { RoleChecker } from "./services/validations/CheckRole.service"
 import { FindUserRoles } from "./services/roleFinder.service"
 import { UserRoleService } from "./services/getAllRoles.service"
 import { UserExist } from "./services/validations/CheckExistingUser.service"
+import { FindAllAvailableUserRoles } from "./services/getAllAvailableUserRoles.service"
 
 export namespace AuthBindings {
 
@@ -13,6 +14,7 @@ export namespace AuthBindings {
   export const ALL_ROLE_FINDER = BindingKey.create<UserRoleService>('services.GetAllRoles')
   export const USER_EXIST = BindingKey.create<UserExist>('services.UserExist')
   export const CREATE_NEWUSER = BindingKey.create<UserExist>('services.CreateNewUser')
+  export const GET_ALL_AVAILABLE_ROLES = BindingKey.create<FindAllAvailableUserRoles>('services.FindAllAvailableUserRoles')
 
   /**
    * Binding key for AuthComponent

@@ -24,5 +24,20 @@ export class UserRoleRepository extends DefaultCrudRepository<
     WHERE ur.userId = @userId
   `);
   }
+  async findAvailableRolesByUserId(userId: string) {
+    return this.dataSource.execute(`
+    DECLARE @userId NVARCHAR(255) = '${userId}';
+
+    SELECT r.name FROM Role
+    WHERE r.name NOT IN (
+      SELECT r.name
+      FROM Role r
+      INNER JOIN Role_User ur ON ur.roleId = r.id
+      WHERE ur.userId = @userId
+      )
+  `);
+  }
+
+
 
 }

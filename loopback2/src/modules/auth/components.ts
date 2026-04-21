@@ -12,6 +12,7 @@ import { FindUserRoles } from './services/roleFinder.service';
 import { UserRoleService } from './services/getAllRoles.service';
 import { UserExist } from './services/validations/CheckExistingUser.service';
 import { CreateNewUser } from './services/CreateNewUser.service';
+import { FindAllAvailableUserRoles } from './services/getAllAvailableUserRoles.service';
 
 
 
@@ -45,6 +46,7 @@ export class AuthComponent implements Component {
     UserRoleService,
     UserExist,
     CreateNewUser,
+    FindAllAvailableUserRoles,
   ]
 
   bindings: Binding[] = [
