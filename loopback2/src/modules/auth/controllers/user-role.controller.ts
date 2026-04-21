@@ -13,22 +13,23 @@ import {
   getModelSchemaRef,
   patch,
   put,
-  del,
   requestBody,
   response,
   HttpErrors,
 } from '@loopback/rest';
 import { Role, UserRole } from '../models';
-import { UserRoleRepository } from '../repositories';
-import { RoleRepository } from '../repositories/role.repository';
+import { UserRoleRepository, RoleRepository } from '../repositories';
 import { SecurityBindings, securityId, UserProfile } from '@loopback/security';
 import { inject } from '@loopback/context'
 import { authenticate } from '@loopback/authentication';
-import { checkRole } from '../services/CheckRole.service';
 import { UserRoleService } from '../services/getAllRoles.service';
+import { RoleChecker } from '../services/validations/CheckRole.service';
+import { service } from '@loopback/core';
 
 export class UserRoleController {
   constructor(
+    @service(RoleChecker)
+    public roleChecker: RoleChecker,
     @repository(UserRoleRepository)
     public userRoleRepository: UserRoleRepository,
     @repository(RoleRepository)
@@ -197,7 +198,7 @@ export class UserRoleController {
     : Promise<{ isOwner: boolean }> {
 
     const userId = currentUserProfile[securityId];
-    const doesRoleExist = await checkRole(userId, 'Owner', this.userRoleRepository, this.roleRepository);
+    const doesRoleExist = await this.roleChecker.checkRole(userId, 'Owner',);
     if (!doesRoleExist) throw new HttpErrors.Unauthorized('User does not have the required role');
     return { isOwner: true };
   }

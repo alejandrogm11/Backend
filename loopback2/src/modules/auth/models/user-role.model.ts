@@ -1,5 +1,5 @@
 import {belongsTo, Entity, model, property} from '@loopback/repository';
-import { Role } from './role.model';
+import { Role } from "./role.model"
 import { User } from '@loopback/authentication-jwt';
 
 @model({

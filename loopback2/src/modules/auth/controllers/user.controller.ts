@@ -7,7 +7,7 @@ import {
   UserRepository,
   UserServiceBindings,
 } from '@loopback/authentication-jwt';
-import { inject } from '@loopback/core';
+import { inject, service } from '@loopback/core';
 import { Filter, model, property, repository } from '@loopback/repository';
 import {
   get,
@@ -24,11 +24,10 @@ import { SecurityBindings, securityId, UserProfile } from '@loopback/security';
 import { genSalt, hash } from 'bcryptjs';
 import _, { filter } from 'lodash';
 import { UserCredentialsRepository } from '@loopback/authentication-jwt';
-import { validateSignupData } from '../services/signupValidationSchema';
-import { findUserRoles } from '../services/roleFinder.service';
+import { validateSignupData } from '../services/validations/signupValidationSchema.service';
 import { RoleRepository, UserRoleRepository } from '../repositories';
-import { Console } from 'console';
-import { checkRole } from '../services/CheckRole.service';
+import { RoleChecker } from '../services/validations/CheckRole.service';
+import { FindUserRoles } from '../services/roleFinder.service';
 
 
 @model()
@@ -82,7 +81,8 @@ export class UserController {
     public userRoleRepository: UserRoleRepository,
     @repository(RoleRepository)
     public roleRepository: RoleRepository,
-
+    @service(FindUserRoles)
+    public findUserRoles: FindUserRoles,
   ) { }
 
   @post('/auth/login', {
@@ -204,24 +204,19 @@ export class UserController {
   ): Promise<User> {
 
     const result = validateSignupData(newUserRequest);
-
     if (!result.success) {
       throw new HttpErrors.UnprocessableEntity('Unprocessable Entity / Invalid data');
     }
-
     const foundUser = await this.userRepository.findOne({
       where: { username: newUserRequest.username },
     });
-
     if (foundUser) {
       throw new HttpErrors.Conflict('Este usuario ya existe');
     }
-
     const password = await hash(newUserRequest.password, await genSalt());
     const savedUser = await this.userRepository.create(
       _.omit(newUserRequest, ['password', 'id']),
     );
-
     // Introduce el usuario en la bbdd
     await this.userCredentialsRepository.create({
       password,
@@ -263,7 +258,6 @@ export class UserController {
   }
 
 
-
   @authenticate('jwt-cookie')
   @get('/admin/users', {
 
@@ -280,19 +274,17 @@ export class UserController {
       },
     },
   }
-  ) async getAllUsers(@inject(SecurityBindings.USER) currentUserProfile: UserProfile,
+  ) async getAllUsers(
+    @service(RoleChecker) roleChecker: RoleChecker,
+    @inject(SecurityBindings.USER) currentUserProfile: UserProfile,
     @param.filter(User) filter?: Filter<User>,
-
   ) {
 
     const userId = currentUserProfile[securityId]
-    const doesRoleExist = await checkRole(userId, 'Admin', this.userRoleRepository, this.roleRepository);
+    const doesRoleExist = await roleChecker.checkRole(userId, 'Admin');
     if (!doesRoleExist) throw new HttpErrors.Unauthorized('User does not have the required role');
     return this.userRepository.find(filter)
   }
-
-
-
 
 
   // Fin user controller

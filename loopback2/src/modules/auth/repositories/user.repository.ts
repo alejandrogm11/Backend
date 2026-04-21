@@ -1,8 +1,8 @@
-import {inject, Getter} from '@loopback/core';
-import {DefaultCrudRepository, repository, HasOneRepositoryFactory} from '@loopback/repository';
-import {AgmmssqlDataSource} from '../datasources';
-import {User, UserRelations, UserCredentials} from '@loopback/authentication-jwt';
-import {UserCredentialsRepository} from './user-credentials.repository';
+import { inject, Getter } from '@loopback/core';
+import { DefaultCrudRepository, repository, HasOneRepositoryFactory } from '@loopback/repository';
+import { AgmmssqlDataSource } from '../../../datasources';
+import { User, UserRelations, UserCredentials } from '@loopback/authentication-jwt';
+import { UserCredentialsRepository } from './user-credentials.repository';
 
 export class UserRepository extends DefaultCrudRepository<
   User,

@@ -4,7 +4,7 @@ import {
   RestExplorerBindings,
   RestExplorerComponent,
 } from '@loopback/rest-explorer';
-import { RepositoryMixin } from '@loopback/repository';
+import { JugglerDataSource, RepositoryMixin } from '@loopback/repository';
 import { RestApplication } from '@loopback/rest';
 import { ServiceMixin } from '@loopback/service-proxy';
 import path from 'path';
@@ -19,17 +19,18 @@ import {
   UserServiceBindings,
 } from '@loopback/authentication-jwt';
 import { AgmmssqlDataSource } from './datasources/agm-mssql.datasource';
-import { UserRepository, UserCredentialsRepository } from './repositories';
-import { JwtCookieStrategy } from './services/jwt-cookie.strategy';
-import { UserRoleService } from './services/getAllRoles.service';
+import { UserRepository, UserCredentialsRepository } from './modules/auth/repositories';
+import { JwtCookieStrategy } from './modules/auth/services/jwt-cookie.strategy';
+import { UserRoleService } from './modules/auth/services/getAllRoles.service';
 export { ApplicationConfig };
 import dotenv from "dotenv";
+import { AuthComponent } from './modules/auth/components';
+import { FindUserRoles } from './modules/auth/services/roleFinder.service';
+import { RoleChecker } from './modules/auth/services/validations/CheckRole.service';
 
 dotenv.config();
 
-export class Loopback2Application extends BootMixin(
-  ServiceMixin(RepositoryMixin(RestApplication)),
-) {
+export class Loopback2Application extends BootMixin(ServiceMixin(RepositoryMixin(RestApplication)),) {
   constructor(options: ApplicationConfig = {}) {
     super({                              // ← cambia esta línea
       ...options,
@@ -43,6 +44,28 @@ export class Loopback2Application extends BootMixin(
         },
       },
     });
+
+    ((app) => {
+      const datasource = new JugglerDataSource({
+        name: 'agmmssql',
+        connector: 'mssql',
+        host: process.env.DB_HOST || 'localhost',
+        port: Number(process.env.DB_PORT) || 1433,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_NAME,
+        options: {
+          enableArithAbort: true
+        }
+      })
+      app.dataSource(datasource)
+
+      this.component(AuthComponent)
+      this.dataSource(datasource, 'auth')
+
+    })(this)
+
+
 
     // Set up the custom sequence
     this.sequence(MySequence);
@@ -87,6 +110,6 @@ export class Loopback2Application extends BootMixin(
         extensions: ['.controller.js'],
         nested: true,
       },
-    };
+    }
   }
 }

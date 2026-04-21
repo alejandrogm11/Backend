@@ -1,7 +1,7 @@
 import { inject } from '@loopback/core';
-import { DefaultCrudRepository } from '@loopback/repository';
-import { AgmmssqlDataSource } from '../datasources';
+import { DefaultCrudRepository, JugglerDataSource } from '@loopback/repository';
 import { UserRole, UserRoleRelations } from '../models';
+import { AuthBindings } from '../keys';
 
 export class UserRoleRepository extends DefaultCrudRepository<
   UserRole,
@@ -9,7 +9,8 @@ export class UserRoleRepository extends DefaultCrudRepository<
   UserRoleRelations
 > {
   constructor(
-    @inject('datasources.agmmssql') dataSource: AgmmssqlDataSource,
+    @inject(`datasources.${AuthBindings.DATASOURCE.key}`)
+    dataSource: JugglerDataSource,
   ) {
     super(UserRole, dataSource);
   }

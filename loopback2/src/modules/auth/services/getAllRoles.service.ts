@@ -1,5 +1,5 @@
 import { repository } from "@loopback/repository";
-import { UserRoleRepository } from "../repositories";
+import { UserRoleRepository } from "../repositories"
 
 
 export class UserRoleService {
