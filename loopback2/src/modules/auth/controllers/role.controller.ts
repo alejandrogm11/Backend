@@ -161,13 +161,14 @@ export class RoleController {
   }
 
 
-  @get('/admin/available-roles/{userId}')
+  @get('/admin/available-roles/{id}')
   @authenticate('jwt-cookie')
   @response(200, {
     description: 'All available roles for a user',
   })
-  async getAvailableRoles(@param.path.number('userid') id: string): Promise<Role> {
-    if (await this.roleChecker.checkRole(this.user[securityId], 'Admin')) {
+  async getAvailableRoles(@param.path.string('id') id: string): Promise<Role> {
+    const hasRole = await this.roleChecker.checkRole(this.user[securityId], 'Admin');
+    if (!hasRole) {
       throw new HttpErrors.Unauthorized('You are Unauthorized')
     }
     return await this.findAllAvailableUserRoles.findAllAvailableUserRoles(id)

@@ -280,7 +280,6 @@ export class UserController {
     @inject(SecurityBindings.USER) currentUserProfile: UserProfile,
     @param.filter(User) filter?: Filter<User>,
   ) {
-
     const userId = currentUserProfile[securityId]
     const doesRoleExist = await roleChecker.checkRole(userId, 'Admin');
     if (!doesRoleExist) throw new HttpErrors.Unauthorized('User does not have the required role');
