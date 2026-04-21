@@ -10,6 +10,8 @@ import { AuthComponentConfig } from './types/config';
 import { RoleChecker } from './services/validations/CheckRole.service';
 import { FindUserRoles } from './services/roleFinder.service';
 import { UserRoleService } from './services/getAllRoles.service';
+import { UserExist } from './services/validations/CheckExistingUser.service';
+import { CreateNewUser } from './services/CreateNewUser.service';
 
 
 
@@ -40,7 +42,9 @@ export class AuthComponent implements Component {
   services?: ServiceOrProviderClass[] = [
     RoleChecker,
     FindUserRoles,
-    UserRoleService
+    UserRoleService,
+    UserExist,
+    CreateNewUser,
   ]
 
   bindings: Binding[] = [

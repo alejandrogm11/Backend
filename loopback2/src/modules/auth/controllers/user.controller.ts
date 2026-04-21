@@ -22,12 +22,15 @@ import {
 } from '@loopback/rest';
 import { SecurityBindings, securityId, UserProfile } from '@loopback/security';
 import { genSalt, hash } from 'bcryptjs';
-import _, { filter } from 'lodash';
+import _, { create, filter } from 'lodash';
 import { UserCredentialsRepository } from '@loopback/authentication-jwt';
 import { validateSignupData } from '../services/validations/signupValidationSchema.service';
 import { RoleRepository, UserRoleRepository } from '../repositories';
 import { RoleChecker } from '../services/validations/CheckRole.service';
 import { FindUserRoles } from '../services/roleFinder.service';
+import { UserExist } from '../services/validations/CheckExistingUser.service';
+import { CreateNewUser } from '../services/CreateNewUser.service';
+import { publicDecrypt } from 'crypto';
 
 
 @model()
@@ -83,6 +86,11 @@ export class UserController {
     public roleRepository: RoleRepository,
     @service(FindUserRoles)
     public findUserRoles: FindUserRoles,
+    @service(UserExist)
+    public userExist: UserExist,
+    @service(CreateNewUser)
+    public createNewUser: CreateNewUser,
+
   ) { }
 
   @post('/auth/login', {
@@ -207,26 +215,29 @@ export class UserController {
     if (!result.success) {
       throw new HttpErrors.UnprocessableEntity('Unprocessable Entity / Invalid data');
     }
-    const foundUser = await this.userRepository.findOne({
-      where: { username: newUserRequest.username },
-    });
-    if (foundUser) {
-      throw new HttpErrors.Conflict('Este usuario ya existe');
-    }
+    // Comprobamos si el usuario existe en BBDD
+    this.userExist.findExistingUser(newUserRequest.username)
+
+
+    // Se hashea la password y la introducimos en BBDD
     const password = await hash(newUserRequest.password, await genSalt());
     const savedUser = await this.userRepository.create(
       _.omit(newUserRequest, ['password', 'id']),
     );
-    // Introduce el usuario en la bbdd
-    await this.userCredentialsRepository.create({
-      password,
-      userId: savedUser.id,
-    });
 
-    await this.userRoleRepository.create({
-      userId: savedUser.id,
-      roleId: 3,
-    });
+    // Introduce usuario en BBDD
+    this.createNewUser.createNewUser(savedUser.id, password)
+
+    // // Introduce el usuario en la bbdd
+    // await this.userCredentialsRepository.create({
+    //   password,
+    //   userId: savedUser.id,
+    // });
+    // // Damos el rol por defecto AUSER
+    // await this.userRoleRepository.create({
+    //   userId: savedUser.id,
+    //   roleId: 3,
+    // });
     return savedUser;
   }
 
@@ -260,7 +271,6 @@ export class UserController {
 
   @authenticate('jwt-cookie')
   @get('/admin/users', {
-
     responses: {
       '200': {
         description: 'Return all Users',
