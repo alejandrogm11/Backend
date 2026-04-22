@@ -26,12 +26,11 @@
             <q-dialog v-model="showAddRole" persistent>
               <q-card>
                 <q-card-section class="row items-center">
-                  <q-avatar icon="signal_wifi_off" color="primary" text-color="white" />
+                  <q-avatar icon="person_add" color="primary" text-color="white" />
                   <span class="q-ml-sm">Añadir Rol a {{ selectedUser?.label }}</span>
                 </q-card-section>
                 <q-card-section>
                   <q-input v-model="cUserRoles" filled readonly dark />
-
                   <q-select
                     v-model="selectedRole"
                     :options="cAvailableRoles"
@@ -41,11 +40,12 @@
                   />
                 </q-card-section>
                 <q-card-actions align="right">
-                  <q-btn flat label="Cancelar" color="info" v-close-popup />
+                  <q-btn flat label="Cancelar" color="warning" v-close-popup />
                   <q-btn
                     flat
                     label="Añadir Rol"
-                    color="positive"
+                    color="secondary
+                    "
                     v-close-popup
                     @click="asignRole"
                   />
