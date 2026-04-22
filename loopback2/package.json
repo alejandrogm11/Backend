@@ -64,6 +64,7 @@
     "json": "^11.0.0",
     "loopback-connector-mssql": "^3.8.0",
     "loopback-connector-rest": "^6.0.5",
+    "nodemailer": "^8.0.5",
     "tslib": "^2.0.0",
     "zod": "^4.3.6"
   },

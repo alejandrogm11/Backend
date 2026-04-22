@@ -50,6 +50,11 @@ services:
       placement:
         constraints:
           - node.role == manager
+
+  # ──────────────────────────────
+  # NGINX
+  # ──────────────────────────────
+
   frontend:
     image: nginx:alpine
     ports:
@@ -60,6 +65,19 @@ services:
     networks:
       - app-network
 
+  # ──────────────────────────────
+  # MAIL HOG
+  # ──────────────────────────────
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: mailhog
+    ports:
+      - "1025:1025" # Puerto SMTP
+      - "8025:8025" # Puerto UI Web
+    restart: unless-stopped
+
+
 volumes:
   sqlserver_data:
     driver: local
@@ -69,3 +87,5 @@ volumes:
 networks:
   app-network:
     driver: overlay
+
+    
