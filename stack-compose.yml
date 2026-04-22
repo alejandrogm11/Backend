@@ -9,10 +9,9 @@ services:
       MSSQL_SA_PASSWORD: MiPassword123!
       MSSQL_PID: Developer
     ports:
-      - "1433:1433"
+      - 1433:1433
     volumes:
       - sqlserver_data:/var/opt/mssql
-      - public_directory:/usr/share/nginx/html
     networks:
       - app-network
     deploy:
@@ -29,15 +28,17 @@ services:
   # LOOPBACK API
   # ──────────────────────────────
   loopback-app:
-    image: prueba-loopback1:1.0
+    image: lb:1.0
     ports:
-      - "3000:3000"
+      - 3000:3000
     environment:
       DB_HOST: sqlserver
       DB_PORT: 1433
-      DB_USER: "sa"
+      DB_USER: sa
       DB_PASSWORD: MiPassword123!
       DB_NAME: AGMPRUEBAS
+    volumes:
+      - public_directory:/usr/share/nginx/html
     depends_on:
       - sqlserver
     networks:
