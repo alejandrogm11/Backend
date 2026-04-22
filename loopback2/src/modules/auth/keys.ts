@@ -8,6 +8,7 @@ import { UserExist } from "./services/validations/CheckExistingUser.service"
 import { FindAllAvailableUserRoles } from "./services/getAllAvailableUserRoles.service"
 import { GetRoleID } from "./services/getRoleID.service"
 import { ValidateUserID } from "./services/validations/validateUserID.service"
+import { MailService } from "./services/welcomeMailSender.service"
 
 export namespace AuthBindings {
 
@@ -19,6 +20,7 @@ export namespace AuthBindings {
   export const GET_ALL_AVAILABLE_ROLES = BindingKey.create<FindAllAvailableUserRoles>('services.FindAllAvailableUserRoles')
   export const GET_ROLE_ID = BindingKey.create<GetRoleID>('services.GetRoleID')
   export const VAL_USER_ID = BindingKey.create<ValidateUserID>('services.ValidateUserID')
+  export const MAIL_SERVICE = BindingKey.create<MailService>('services.MailService')
 
   /**
    * Binding key for AuthComponent

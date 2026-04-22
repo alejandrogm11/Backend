@@ -30,6 +30,8 @@ import { RoleChecker } from '../services/validations/CheckRole.service';
 import { FindUserRoles } from '../services/roleFinder.service';
 import { UserExist } from '../services/validations/CheckExistingUser.service';
 import { CreateNewUser } from '../services/CreateNewUser.service';
+import { MailService } from '../services/welcomeMailSender.service';
+import Mail from 'nodemailer/lib/mailer';
 
 
 
@@ -90,6 +92,8 @@ export class UserController {
     public userExist: UserExist,
     @service(CreateNewUser)
     public createNewUser: CreateNewUser,
+    @service(MailService)
+    public mailService: MailService
 
   ) { }
 
@@ -229,6 +233,9 @@ export class UserController {
     // Introduce usuario en BBDD
     this.createNewUser.createNewUser(savedUser.id, password)
 
+    //Mail de bienvenida
+    this.mailService.sendSignUpMail(savedUser.email)
+
     return savedUser;
   }
 
@@ -284,9 +291,28 @@ export class UserController {
     const doesRoleExist = await roleChecker.checkRole(userId, 'Admin');
     if (!doesRoleExist) throw new HttpErrors.Unauthorized('User does not have the required role');
     return this.userRepository.find(filter)
+
+    // Fin user controller
   }
 
-
-  // Fin user controller
+  @get('/mail/send', {
+    responses: {
+      '200': {
+        description: 'Return all Users',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'string',
+            },
+          },
+        },
+      },
+    },
+  }
+  )
+  async sendWelcomeMail(
+  ) {
+    this.mailService.sendWelcomeMail();
+  }
 }
 
