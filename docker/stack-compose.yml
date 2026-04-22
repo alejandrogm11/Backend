@@ -37,8 +37,6 @@ services:
       DB_USER: sa
       DB_PASSWORD: MiPassword123!
       DB_NAME: AGMPRUEBAS
-    volumes:
-      - public_directory:/usr/share/nginx/html
     depends_on:
       - sqlserver
     networks:
@@ -52,6 +50,15 @@ services:
       placement:
         constraints:
           - node.role == manager
+  frontend:
+    image: nginx:alpine
+    ports:
+      - 8080:80
+    volumes:
+      - public_directory:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:r
+    networks:
+      - app-network
 
 volumes:
   sqlserver_data:
