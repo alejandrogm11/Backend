@@ -1,7 +1,8 @@
-import { UserRepository } from "@loopback/authentication-jwt";
 import { injectable } from "@loopback/core";
 import { repository } from "@loopback/repository";
-import * as Crypto from 'crypto'
+import { UserRepository } from "../repositories";
+import * as Crypto from 'crypto';
+import { User } from "@loopback/authentication-jwt";
 
 @injectable()
 export class UpdateUserToken {
@@ -11,27 +12,43 @@ export class UpdateUserToken {
   ) { }
 
   async updateUserToken(userId: string): Promise<string> {
-    const token = Crypto.randomBytes(32).toString("hex")
-    try {
-      await this.userRepository.updateById(userId, {
-        verificationToken: token
-      });
-      await this.updateTokenExpireDate(userId);
-    } catch (error) {
-      console.error(error)
-    }
-    return token
-  }
+    const token = Crypto.randomBytes(32).toString("hex");
+    const date = new Date();
+    const expireTime = new Date(Date.now() + 3600000).toISOString(); // 1h en ms
+    console.log("fechaISO", expireTime)
 
-  async updateTokenExpireDate(userId: string): Promise<void> {
-    const date = new Date()
-    const expiretime = new Date(date.getTime() + 3600000) // 1h en ms 
     try {
-      await this.userRepository.updateById(userId, {
-        tokenExpireDate: expiretime
-      })
+      const found = await this.userRepository.findById(userId)
+
+      // const dto:User = {
+      //   ...found as User
+      // }
+
+      // {
+      //   id: userId,
+      //     verificationToken: token,
+      //       tokenExpireDate: expireTime,  // ← CONVERTIR A STRING ISO
+      // }
+
+
+      found.verificationToken = token
+      found.tokenExpireDate = "Prueba123"
+
+      const result = await this.userRepository.execute(`
+        UPDATE [User]
+        SET
+          verificationToken= '${token}',
+          tokenExpireDate= '${expireTime}'
+        WHERE 
+        id = '${userId}';`
+      )
+      console.log('✓ Token y fecha actualizados correctamente');
     } catch (error) {
-      console.error(error)
+      console.error('❌ Error en updateUserToken:', error);
+      throw error;
     }
+
+    return token;
   }
 }
+

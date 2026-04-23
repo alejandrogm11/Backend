@@ -1,8 +1,6 @@
 <template>
   <div class="contenedor">
-
     <q-form class="my-card" bordered @submit.prevent="validateForm">
-
       <q-card-section class="items-center text-center">
         <div class="text-h6">Signup - AGM</div>
       </q-card-section>
@@ -22,11 +20,10 @@
             item-aligned
             class="username"
           >
-          <template v-slot:prepend>
+            <template v-slot:prepend>
               <q-icon name="person" />
             </template>
           </q-input>
-
 
           <q-input
             standout
@@ -44,7 +41,7 @@
           <q-input
             v-model="passwd"
             standout
-            :type="isPwd ? 'text': 'password' "
+            :type="isPwd ? 'text' : 'password'"
             label="Password"
             item-aligned
             :rules="passwordRules"
@@ -64,7 +61,9 @@
 
           <br />
           <div class="remember-signup-container">
-          <router-link to="/auth/login" class="login-link">¿Ya tienes cuenta? Inicia sesión</router-link>
+            <router-link to="/auth/login" class="login-link"
+              >¿Ya tienes cuenta? Inicia sesión</router-link
+            >
           </div>
 
           <br />
@@ -80,22 +79,19 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useQuasar } from 'quasar';
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { RouterLink } from 'vue-router';
 import { SignUp } from 'src/services/signup';
 import type { FetchError } from 'ofetch';
 
-
 const router = useRouter();
-const route = useRoute();
 const $q = useQuasar();
 
 //Visibilidad de contraseña
 const isPwd = ref(true);
-const email = ref("");
-const passwd = ref("");
-const username = ref("");
-
+const email = ref('');
+const passwd = ref('');
+const username = ref('');
 
 // Validacion de campos
 const emailRules = [
@@ -109,28 +105,33 @@ const passwordRules = [
 ];
 
 // Valida la entrada en el form
-async function validateForm(){
-    if ((email.value === "") || (passwd.value === "")){
-      $q.notify({ type: 'warning', message: 'Los campos email/contraseña no pueden estar vacios', position: "top" })
-      return
-    }
-    if (!(email.value.includes("@")) && !(passwd.value.length >= 8)){
-      $q.notify({ type: 'negative', message: 'Introduce email/contraseña válidos', position: "top" })
-      return
-    }
-    if (username.value === ""){
-      $q.notify({ type: 'warning', message: 'El campo username no puede estar vacio', position: "top" })
-      return
-    }
+async function validateForm() {
+  if (email.value === '' || passwd.value === '') {
+    $q.notify({
+      type: 'warning',
+      message: 'Los campos email/contraseña no pueden estar vacios',
+      position: 'top',
+    });
+    return;
+  }
+  if (!email.value.includes('@') && !(passwd.value.length >= 8)) {
+    $q.notify({ type: 'negative', message: 'Introduce email/contraseña válidos', position: 'top' });
+    return;
+  }
+  if (username.value === '') {
+    $q.notify({
+      type: 'warning',
+      message: 'El campo username no puede estar vacio',
+      position: 'top',
+    });
+    return;
+  }
 
-    await handleSignUp()
+  await handleSignUp();
 }
-
-
 
 async function handleSignUp() {
   // DBUG: console.log(username.value, email.value, passwd.value);
-
 
   if (!$q) {
     console.error('Quasar no está disponible');
@@ -145,12 +146,10 @@ async function handleSignUp() {
 
   // Aquí usarás await con tu petición a la API
 
-try {
+  try {
     await SignUp(username.value, email.value, passwd.value);
-    const redirect = (route.query.redirect as string) || '/';
-    await router.push(redirect);
-    $q.notify({ type: 'positive', message: 'Usuario registrado con éxito', position: "top" });
-
+    await router.push('/auth/login');
+    $q.notify({ type: 'positive', message: 'Usuario registrado con éxito', position: 'top' });
   } catch (error: unknown) {
     const err = error as FetchError;
     let errorMessage = 'Error al registrar usuario';
@@ -158,9 +157,7 @@ try {
     if (err.statusCode === 422) {
       errorMessage = 'Datos inválidos: ' + (err.data?.message || 'Revisa los campos');
       // DEBUG:console.error('Error al registrar usuario:', err.data);
-    } else
-
-    if (err.statusCode === 409) {
+    } else if (err.statusCode === 409) {
       errorMessage = 'El nombre de usuario ya existe';
       // DEBUG:console.error('Error al registrar usuario:', err.message);
     }
@@ -178,7 +175,7 @@ try {
   margin-bottom: 18px;
 }
 
-.username{
+.username {
   margin-bottom: 18px;
 }
 
@@ -195,7 +192,6 @@ try {
   margin-top: 10px;
 }
 
-
 .login-link {
   color: $info;
   text-decoration: none;
@@ -210,7 +206,6 @@ try {
   color: #8bd5ff;
   text-decoration: underline;
 }
-
 
 /* CARD */
 .my-card {
@@ -229,7 +224,9 @@ try {
 
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
 
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .my-card:hover {
@@ -280,7 +277,9 @@ try {
   border-radius: 12px;
   font-weight: 600;
   letter-spacing: 0.5px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .btn:hover {

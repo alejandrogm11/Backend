@@ -75,7 +75,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useQuasar } from 'quasar';
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 import { useAuthStore } from 'src/stores/auth';
 import { checkUserMail } from 'src/services/checkUserMailVerified.service';
 import { callsendVerificationMail } from 'src/services/sendVerificationEmail.service';

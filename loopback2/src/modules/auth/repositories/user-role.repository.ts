@@ -27,7 +27,6 @@ export class UserRoleRepository extends DefaultCrudRepository<
   async findAvailableRolesByUserId(userId: string) {
     return this.dataSource.execute(`
     DECLARE @userId NVARCHAR(255) = '${userId}';
-
     SELECT r.name FROM Role r
     WHERE r.name NOT IN (
       SELECT ro.name

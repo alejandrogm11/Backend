@@ -9,28 +9,58 @@ export class ValidateUserToken {
     @repository(UserRepository)
     private readonly userRepository: UserRepository
   ) { }
+
   async validateUserToken(userId: string): Promise<boolean> {
-    let isTokenValid = false
     try {
-      const user = await this.userRepository.findById(userId)
-      const expiredate = user.tokenExpireDate
+      const user = await this.userRepository.findById(userId);
+      console.log('UPDATE, User found,', {
+        id: user.id,
+        email: user.email,
+        emailVerified: user.emailVerified,
+        verificationToken: user.verificationToken,
+        tokenExpireDate: user.tokenExpireDate,
+      });
+      const expireDate = await this.getUserExpireDate(userId)
 
-      const alreadyExpiredDate = new Date("2007-01-01T00:00:00Z")
-      const dateToCompare = expiredate ?? alreadyExpiredDate;
-
-      if (dateToCompare.getTime() > new Date().getTime()) {
-        this.userRepository.updateById(userId, {
-          emailVerified: true
-        })
-        isTokenValid = true
-        return isTokenValid
+      // Si no hay fecha de expiración, el token es inválido
+      console.log("Fecha de expiracion", expireDate)
+      if (!expireDate) {
+        return false;
       }
 
+      //Convertir a date
+      const expire = new Date(expireDate[0].tokenExpireDate)
+      const now = new Date()
+
+      // Verificar si el token aún es válido
+      if (expire > now) {
+        console.log("Verificado", true)
+        await this.userRepository.execute(`          
+          UPDATE [User]
+          SET
+            emailVerified= 1,
+            tokenExpireDate= '2007-01-01T00:00:00.000Z'
+          WHERE
+          id = '${userId}';`
+        );
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('Error validating user token:', error);
+      return false;
     }
-    catch (error) {
-      console.error(error)
-    }
-    return isTokenValid
   }
 
+  async getUserExpireDate(userId: string) {
+    const date = await this.userRepository.execute(
+      `SELECT tokenExpireDate
+      FROM [User]
+      WHERE id = '${userId}'`
+    )
+    return date
+  }
 }
+
+

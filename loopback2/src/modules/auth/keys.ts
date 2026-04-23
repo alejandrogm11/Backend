@@ -25,6 +25,7 @@ export namespace AuthBindings {
   export const MAIL_SERVICE = BindingKey.create<MailService>('services.MailService')
   export const IS_MAIL_VERIFIED = BindingKey.create<IsUserMailVerified>('services.IsUserMailVerified')
   export const UPDATE_USER_TOKEN = BindingKey.create<UpdateUserToken>('services.UpdateUserToken')
+  export const VALIDATE_USER_TOKEN = BindingKey.create<ValidateUserID>('services.ValidateuserToken')
 
   /**
    * Binding key for AuthComponent

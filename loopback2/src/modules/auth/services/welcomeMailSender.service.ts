@@ -58,7 +58,7 @@ export class MailService {
           to: mail,
           from: '"Alejandro Garcia" hola@ejemplo.com',
           subject: "Verifica tu cuenta en [APPNAME]",
-          text: `Pincha en este enlace para verificarte \nEnlace: http://localhost:9000/auth/verify-mail?token=${token}`,
+          text: `Pincha en este enlace para verificarte \nEnlace: http://localhost:9000/#/auth/verify-mail?token=${token}`,
         })
       console.log("Mensaje en viandose", info.messageId);
     } catch (error) {

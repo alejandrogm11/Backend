@@ -33,6 +33,7 @@ import { CreateNewUser } from '../services/CreateNewUser.service';
 import { MailService } from '../services/welcomeMailSender.service';
 import { IsUserMailVerified } from '../services/isUserMailVerified.service';
 import { UpdateUserToken } from '../services/UpdateUserToken.service';
+import { ValidateUserToken } from '../services/validations/validateUserToken.service';
 
 
 
@@ -99,6 +100,8 @@ export class UserController {
     public isuserMailVerified: IsUserMailVerified,
     @service(UpdateUserToken)
     public updateUserToken: UpdateUserToken,
+    @service(ValidateUserToken)
+    public validateUserToken: ValidateUserToken,
   ) { }
 
   @post('/auth/login', {
@@ -363,7 +366,7 @@ export class UserController {
   @get('/auth/verify-token', {
     responses: {
       '200': {
-        description: 'Sends email for verification',
+        description: 'Ckecks ',
         content: {
           'application/json': {
             schema: {
@@ -373,9 +376,10 @@ export class UserController {
         },
       },
     },
-  }) async verifyMail(@param.query.string('token') token: string) {
-    
-  } 
+  }) async verifyMail(@param.query.string('token') token: string,
+    @inject(SecurityBindings.USER) currentUserProfile: UserProfile,) {
+    this.validateUserToken.validateUserToken(currentUserProfile[securityId])
+  }
 
 
 

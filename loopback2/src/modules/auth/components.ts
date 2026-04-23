@@ -18,6 +18,7 @@ import { ValidateUserID } from './services/validations/validateUserID.service';
 import { MailService } from './services/welcomeMailSender.service';
 import { IsUserMailVerified } from './services/isUserMailVerified.service';
 import { UpdateUserToken } from './services/UpdateUserToken.service';
+import { ValidateUserToken } from './services/validations/validateUserToken.service';
 
 
 
@@ -57,10 +58,11 @@ export class AuthComponent implements Component {
     MailService,
     IsUserMailVerified,
     UpdateUserToken,
+    ValidateUserToken,
   ]
 
   bindings: Binding[] = [
-    
+
   ];
 
   constructor(
