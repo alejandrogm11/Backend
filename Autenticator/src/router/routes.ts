@@ -2,6 +2,11 @@ import type { RouteRecordRaw } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
 
+  {
+    path: '/',
+    redirect: '/auth/login',
+    meta: { requiresAuth: false }
+  },
   // Layout de inicio de sesión
   {
     path: '/auth/login',

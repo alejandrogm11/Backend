@@ -243,7 +243,7 @@ async function handleSignUp() {
   min-height: 100vh;
   padding: 20px;
 
-  background: linear-gradient(120deg, #115570, #2c4f5c, #6ab2d1);
+  background: linear-gradient(120deg, #115570, #2c4f5c, #1887b6);
   background-size: 200% 200%;
   animation: gradientMove 12s ease-in-out infinite;
 }

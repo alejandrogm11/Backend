@@ -10,10 +10,25 @@
         color="white"
         text-color="blue"
         unelevated
-        to="/home"
+        @click="checkAuth"
         label="Go Home"
         no-caps
       />
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import { useAuthStore } from 'src/stores/auth';
+import { useRouter } from 'vue-router';
+
+const authStore = useAuthStore();
+const router = useRouter();
+async function checkAuth() {
+  if (authStore.isLogged) {
+    router.push('/home');
+  } else {
+    router.push('/auth/login');
+  }
+}
+</script>

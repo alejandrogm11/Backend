@@ -13,6 +13,10 @@ export const useAuthStore = defineStore('auth', {
     isAuthenticated: false,
     loading: false,
   }),
+
+  getters: {
+    isLogged: (state) => state.isAuthenticated === true,
+  },
   actions: {
     async initSession() {
       // Check if the user is authenticated

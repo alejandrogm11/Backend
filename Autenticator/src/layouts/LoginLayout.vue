@@ -126,19 +126,37 @@ async function goHome() {
 
 function verifyDialog() {
   Dialog.create({
-    title: 'Verifica tu mail',
-    message: 'La API no devolvió true',
+    title: '📧 Verifica tu correo',
+    message: 'Para poder seguir usando la aplicación, necesitas verificar tu email.',
+
+    persistent: true,
+    html: true,
+
+    class: 'verify-dialog',
+
     ok: {
-      label: 'Verificar',
+      label: 'Verificar ahora',
       color: 'primary',
+      unelevated: true,
+      rounded: true,
     },
+
     cancel: {
-      label: 'Calncelar',
+      label: 'Más tarde',
       color: 'warning',
+      flat: true,
+      rounded: true,
     },
   })
     .onOk(() => callsendVerificationMail())
-    .onCancel(() => console.log('Verificacion cancelada'));
+    .onCancel(() =>
+      $q.notify({
+        message: 'Verificación cancelada',
+        position: 'top',
+        color: 'negative',
+        icon: 'cancel',
+      }),
+    );
 }
 
 async function handleLogin() {
@@ -259,7 +277,7 @@ async function handleLogin() {
   min-height: 100vh;
   padding: 20px;
 
-  background: linear-gradient(120deg, #115570, #2c4f5c, #6ab2d1);
+  background: linear-gradient(120deg, #115570, #2c4f5c, #1887b6);
   background-size: 200% 200%;
   animation: gradientMove 12s ease-in-out infinite;
 }
@@ -314,5 +332,46 @@ async function handleLogin() {
   100% {
     background-position: 0% 50%;
   }
+}
+
+.verify-dialog .q-card {
+  border-radius: 16px;
+  background: #0f172a; /* $dark-page */
+  color: white;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+}
+
+/* Título */
+.verify-dialog .q-dialog__title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #3b82f6; /* $primary */
+}
+
+/* Mensaje */
+.verify-dialog .q-dialog__message {
+  font-size: 14px;
+  color: #cbd5e1; /* gris suave tipo Tailwind */
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+/* Botón OK */
+.verify-dialog .q-btn--standard.bg-primary {
+  background: #3b82f6 !important; /* primary */
+  color: white !important;
+}
+
+.verify-dialog .q-btn--standard.bg-primary:hover {
+  background: #1e40af !important; /* secondary */
+}
+
+/* Botón cancelar */
+.verify-dialog .q-btn--flat.text-warning {
+  color: #d97706 !important; /* warning */
+}
+
+.verify-dialog .q-btn--flat.text-warning:hover {
+  background: rgba(217, 119, 6, 0.1);
 }
 </style>
