@@ -74,7 +74,7 @@ export class Loopback2Application extends BootMixin(ServiceMixin(RepositoryMixin
     this.expressMiddleware(cookieParser as any, {});
 
     // Set up default home page
-    this.static('/', path.join(__dirname, '../public'));
+    this.static('/', '/usr/share/nginx/html');
 
     // Customize @loopback/rest-explorer configuration here
     this.configure(RestExplorerBindings.COMPONENT).to({

@@ -40,6 +40,7 @@ export default defineConfig((/* ctx */) => {
       target: {
         browser: 'baseline-widely-available',
         node: 'node22',
+        distDir: './dist'
       },
 
       typescript: {
@@ -57,7 +58,9 @@ export default defineConfig((/* ctx */) => {
 
       // publicPath: '/',
       // analyze: true,
-      // env: {},
+      env: {
+        VUE_ROUTER_MODE: "hash"
+      },
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,
@@ -90,7 +93,7 @@ export default defineConfig((/* ctx */) => {
         '/api': {
           target: "http://localhost:3000",
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, ''),
+          // rewrite: (path) => path.replace(/^\/api/, ''),
         }
       }
     },

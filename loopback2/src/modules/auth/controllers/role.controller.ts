@@ -17,6 +17,7 @@ import {
   requestBody,
   response,
   HttpErrors,
+  api,
 } from '@loopback/rest';
 import { Role } from '../models';
 import { RoleRepository } from '../repositories';
@@ -26,6 +27,7 @@ import { authenticate } from '@loopback/authentication';
 import { SecurityBindings, securityId, UserProfile } from '@loopback/security';
 import { RoleChecker } from '../services/validations/CheckRole.service';
 
+@api({ basePath: '/api/' })
 export class RoleController {
   constructor(
     @repository(RoleRepository)

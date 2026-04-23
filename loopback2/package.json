@@ -1,5 +1,5 @@
 {
-  "name": "loopback2",
+  "name": "lb:1.1",
   "version": "0.0.1",
   "description": "loopback2",
   "keywords": [
@@ -26,7 +26,7 @@
     "test": "lb-mocha --allow-console-logs \"dist/__tests__\"",
     "posttest": "npm run lint",
     "test:dev": "lb-mocha --allow-console-logs dist/__tests__/**/*.js && npm run posttest",
-    "docker:build": "docker build -t loopback2 .",
+    "docker:build": "docker build -t lb:1.1 .",
     "docker:run": "docker run -p 3000:3000 -d loopback2",
     "premigrate": "npm run build",
     "migrate": "node ./dist/migrate",

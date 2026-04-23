@@ -18,7 +18,8 @@ import {
   RestBindings,
   Response,
   HttpErrors,
-  param
+  param,
+  api
 } from '@loopback/rest';
 import { SecurityBindings, securityId, UserProfile } from '@loopback/security';
 import { genSalt, hash } from 'bcryptjs';
@@ -69,7 +70,7 @@ export const CredentialsRequestBody = {
     'application/json': { schema: CredentialsSchema },
   },
 };
-
+@api({ basePath: '/api/' })
 export class UserController {
   constructor(
     @inject(TokenServiceBindings.TOKEN_SERVICE)

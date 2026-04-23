@@ -17,6 +17,7 @@ import {
   response,
   HttpErrors,
   del,
+  api,
 } from '@loopback/rest';
 import { Role, UserRole } from '../models';
 import { UserRoleRepository, RoleRepository } from '../repositories';
@@ -29,6 +30,7 @@ import { service } from '@loopback/core';
 import { CreateUserRoleRequest, GetRoleID } from '../services/getRoleID.service';
 import { ValidateUserID } from '../services/validations/validateUserID.service';
 
+@api({ basePath: '/api/' })
 export class UserRoleController {
   constructor(
     @service(RoleChecker)
