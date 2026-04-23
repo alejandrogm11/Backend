@@ -9,6 +9,8 @@ import { FindAllAvailableUserRoles } from "./services/getAllAvailableUserRoles.s
 import { GetRoleID } from "./services/getRoleID.service"
 import { ValidateUserID } from "./services/validations/validateUserID.service"
 import { MailService } from "./services/welcomeMailSender.service"
+import { IsUserMailVerified } from "./services/isUserMailVerified.service"
+import { UpdateUserToken } from "./services/UpdateUserToken.service"
 
 export namespace AuthBindings {
 
@@ -21,6 +23,8 @@ export namespace AuthBindings {
   export const GET_ROLE_ID = BindingKey.create<GetRoleID>('services.GetRoleID')
   export const VAL_USER_ID = BindingKey.create<ValidateUserID>('services.ValidateUserID')
   export const MAIL_SERVICE = BindingKey.create<MailService>('services.MailService')
+  export const IS_MAIL_VERIFIED = BindingKey.create<IsUserMailVerified>('services.IsUserMailVerified')
+  export const UPDATE_USER_TOKEN = BindingKey.create<UpdateUserToken>('services.UpdateUserToken')
 
   /**
    * Binding key for AuthComponent

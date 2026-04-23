@@ -77,9 +77,12 @@ import { ref } from 'vue';
 import { useQuasar } from 'quasar';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from 'src/stores/auth';
+import { checkUserMail } from 'src/services/checkUserMailVerified.service';
+import { callsendVerificationMail } from 'src/services/sendVerificationEmail.service';
+import { Dialog } from 'quasar';
 
 const router = useRouter();
-const route = useRoute();
+// const route = useRoute();
 const authStore = useAuthStore();
 const $q = useQuasar();
 
@@ -121,6 +124,23 @@ async function goHome() {
   await router.push('/');
 }
 
+function verifyDialog() {
+  Dialog.create({
+    title: 'Verifica tu mail',
+    message: 'La API no devolvió true',
+    ok: {
+      label: 'Verificar',
+      color: 'primary',
+    },
+    cancel: {
+      label: 'Calncelar',
+      color: 'warning',
+    },
+  })
+    .onOk(() => callsendVerificationMail())
+    .onCancel(() => console.log('Verificacion cancelada'));
+}
+
 async function handleLogin() {
   // DBUG: console.log(email.value, passwd.value, rememberMe.value);
 
@@ -140,11 +160,19 @@ async function handleLogin() {
   try {
     await authStore.login(email.value, passwd.value, rememberMe.value);
     await router.push('/home');
-  } catch {
-    $q.notify({ type: 'negative', message: 'Credenciales invalidas' });
-  } finally {
     $q.loading.hide();
-  }
+    const isVerified = await checkUserMail();
+    console.log(isVerified);
+    if (isVerified === false) {
+      verifyDialog();
+    }
+  } catch (error) {
+    console.error(error);
+    $q.notify({ type: 'negative', message: 'Credenciales invalidas' });
+    $q.loading.hide();
+  } // finally {
+  //   $q.loading.hide();
+  // }
 }
 
 // Fin del Script

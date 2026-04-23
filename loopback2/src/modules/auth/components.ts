@@ -16,6 +16,8 @@ import { FindAllAvailableUserRoles } from './services/getAllAvailableUserRoles.s
 import { GetRoleID } from './services/getRoleID.service';
 import { ValidateUserID } from './services/validations/validateUserID.service';
 import { MailService } from './services/welcomeMailSender.service';
+import { IsUserMailVerified } from './services/isUserMailVerified.service';
+import { UpdateUserToken } from './services/UpdateUserToken.service';
 
 
 
@@ -53,6 +55,8 @@ export class AuthComponent implements Component {
     GetRoleID,
     ValidateUserID,
     MailService,
+    IsUserMailVerified,
+    UpdateUserToken,
   ]
 
   bindings: Binding[] = [

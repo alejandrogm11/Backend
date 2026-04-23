@@ -1,10 +1,15 @@
-import { injectable } from '@loopback/core';
+import { inject, injectable } from '@loopback/core';
 import * as nodemailer from "nodemailer";
 import * as dotenv from 'dotenv'
+import { repository } from '@loopback/repository';
+import { User, UserRepository } from '@loopback/authentication-jwt';
+
+
 dotenv.config()
 @injectable()
 export class MailService {
-  constructor() { }
+  constructor(@repository(UserRepository)
+  private readonly userRepository: UserRepository) { }
 
   private transporter = nodemailer.createTransport({
     host: process.env.MAIL_HOST ?? "localhost",
@@ -34,11 +39,39 @@ export class MailService {
   async sendSignUpMail(mail: string) {
     try {
       const info = await this.transporter.sendMail(
-        {to: mail,
-        ...this.mailConfig
-      })
+        {
+          to: mail,
+          ...this.mailConfig
+        })
       console.log("Mensaje en viandose", info.messageId);
     } catch (error) {
+      console.error(error)
+    }
+  }
+
+  async sendVerifyEmail(mail: string, token: string) {
+
+
+    try {
+      const info = await this.transporter.sendMail(
+        {
+          to: mail,
+          from: '"Alejandro Garcia" hola@ejemplo.com',
+          subject: "Verifica tu cuenta en [APPNAME]",
+          text: `Pincha en este enlace para verificarte \nEnlace: http://localhost:9000/auth/verify-mail?token=${token}`,
+        })
+      console.log("Mensaje en viandose", info.messageId);
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  async findUserMail(userId: string) {
+    try {
+      const user = await this.userRepository.findById(userId)
+      return user.email
+    }
+    catch (error) {
       console.error(error)
     }
   }

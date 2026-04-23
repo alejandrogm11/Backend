@@ -31,7 +31,8 @@ import { FindUserRoles } from '../services/roleFinder.service';
 import { UserExist } from '../services/validations/CheckExistingUser.service';
 import { CreateNewUser } from '../services/CreateNewUser.service';
 import { MailService } from '../services/welcomeMailSender.service';
-import Mail from 'nodemailer/lib/mailer';
+import { IsUserMailVerified } from '../services/isUserMailVerified.service';
+import { UpdateUserToken } from '../services/UpdateUserToken.service';
 
 
 
@@ -93,8 +94,11 @@ export class UserController {
     @service(CreateNewUser)
     public createNewUser: CreateNewUser,
     @service(MailService)
-    public mailService: MailService
-
+    public mailService: MailService,
+    @service(IsUserMailVerified)
+    public isuserMailVerified: IsUserMailVerified,
+    @service(UpdateUserToken)
+    public updateUserToken: UpdateUserToken,
   ) { }
 
   @post('/auth/login', {
@@ -292,7 +296,6 @@ export class UserController {
     if (!doesRoleExist) throw new HttpErrors.Unauthorized('User does not have the required role');
     return this.userRepository.find(filter)
 
-    // Fin user controller
   }
 
   @get('/mail/send', {
@@ -314,5 +317,72 @@ export class UserController {
   ) {
     this.mailService.sendWelcomeMail();
   }
+
+  @authenticate('jwt-cookie')
+  @get('/auth/check-verify-mail', {
+    responses: {
+      '200': {
+        description: 'Return all Users',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'boolean',
+            },
+          },
+        },
+      },
+    },
+  }
+  ) async checkVerifiedMail(
+    @inject(SecurityBindings.USER) currentUserProfile: UserProfile,
+  ) {
+    return await this.isuserMailVerified.isUserMailVerified(currentUserProfile[securityId])
+  }
+
+  @authenticate('jwt-cookie')
+  @get('/auth/verify-mail', {
+    responses: {
+      '200': {
+        description: 'Sends email for verification',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'boolean',
+            },
+          },
+        },
+      },
+    },
+  }) async verifyMailSend(@inject(SecurityBindings.USER) currentUserProfile: UserProfile,) {
+    const user = await this.userRepository.findById(currentUserProfile[securityId])
+    const token = await this.updateUserToken.updateUserToken(currentUserProfile[securityId])
+    const userId = this.mailService.sendVerifyEmail(user.email, token)
+  }
+
+  @authenticate('jwt-cookie')
+  @get('/auth/verify-token', {
+    responses: {
+      '200': {
+        description: 'Sends email for verification',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'boolean',
+            },
+          },
+        },
+      },
+    },
+  }) async verifyMail(@param.query.string('token') token: string) {
+    
+  } 
+
+
+
+
+  //FIN--------------------------------
 }
+
+
+
 

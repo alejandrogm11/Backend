@@ -15,6 +15,11 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: false },
   },
 
+  // Verificacion de rokens
+  {
+    path: '/verify-email',
+    component: () => import('pages/VerifiyEmail.vue')
+  },
   // Layout de registro de cuenta
   {
     path: '/signup',
