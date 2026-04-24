@@ -28,7 +28,7 @@ services:
   # LOOPBACK API
   # ──────────────────────────────
   loopback-app:
-    image: lb:1.0
+    image: lb:1.2
     ports:
       - 3000:3000
     environment:
@@ -41,12 +41,14 @@ services:
       - sqlserver
     networks:
       - app-network
+    volumes:
+      - spa:/usr/share/nginx/html
     deploy:
       replicas: 1
       restart_policy:
         condition: on-failure
-        delay: 10s
-        max_attempts: 3
+        delay: 15s
+        max_attempts: 5
       placement:
         constraints:
           - node.role == manager
@@ -55,15 +57,14 @@ services:
   # NGINX
   # ──────────────────────────────
 
-  frontend:
-    image: nginx:alpine
-    ports:
-      - 8080:80
-    volumes:
-      - public_directory:/usr/share/nginx/html:ro
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:r
-    networks:
-      - app-network
+  # frontend:
+  #   image: nginx:alpine
+  #   ports:
+  #     - 8080:80
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/conf.d/default.conf:r
+  #   networks:
+  #     - app-network
 
   # ──────────────────────────────
   # MAIL HOG
@@ -81,7 +82,7 @@ services:
 volumes:
   sqlserver_data:
     driver: local
-  public_directory:
+  spa:
     driver: local
 
 networks:
